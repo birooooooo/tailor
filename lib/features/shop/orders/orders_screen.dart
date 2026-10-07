@@ -83,7 +83,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     selected: _filter == null,
                     onTap: () => setState(() => _filter = null),
                   ),
-                  ...OrderStatus.values.map(
+                  ...orderFlow.map(
                     (s) => Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: AppChip(

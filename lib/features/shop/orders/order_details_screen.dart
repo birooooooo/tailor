@@ -17,17 +17,6 @@ class OrderDetailsScreen extends StatelessWidget {
 
   final String orderId;
 
-  static const List<OrderStatus> _flow = [
-    OrderStatus.pending,
-    OrderStatus.accepted,
-    OrderStatus.measured,
-    OrderStatus.cutting,
-    OrderStatus.stitching,
-    OrderStatus.trial,
-    OrderStatus.ready,
-    OrderStatus.delivered,
-  ];
-
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
@@ -186,7 +175,7 @@ class OrderDetailsScreen extends StatelessWidget {
   ) {
     final current = order.status.step;
     final isActive = order.status.isActive;
-    final canAdvance = isActive && current < _flow.length - 1;
+    final canAdvance = isActive && current < orderFlow.length - 1;
 
     return SoftCard(
       child: Column(
@@ -201,10 +190,14 @@ class OrderDetailsScreen extends StatelessWidget {
               if (canAdvance)
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () =>
-                        _advance(context, provider, order, _flow[current + 1]),
+                    onPressed: () => _advance(
+                      context,
+                      provider,
+                      order,
+                      orderFlow[current + 1],
+                    ),
                     icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                    label: Text('${t.nextStage}: ${_flow[current + 1].ku}'),
+                    label: Text('${t.nextStage}: ${orderFlow[current + 1].ku}'),
                   ),
                 ),
               if (canAdvance) const SizedBox(width: 10),
@@ -384,7 +377,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      '${p.method} • ${Fmt.shortDate(p.date)}',
+                      '${p.method} â€¢ ${Fmt.shortDate(p.date)}',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
@@ -545,7 +538,7 @@ class _Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const steps = OrderDetailsScreen._flow;
+    const steps = orderFlow;
     return Column(
       children: [
         for (int i = 0; i < steps.length; i++)

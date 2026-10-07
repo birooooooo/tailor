@@ -48,7 +48,7 @@ class SampleData {
       Order(
         id: '8842',
         customer: c('c1', 'داریا کاروان', '0770 123 4567', 'هەولێر'),
-        status: OrderStatus.cutting,
+        status: OrderStatus.accepted,
         createdAt: ago(6),
         dueDate: ahead(1),
         discount: 15000,
@@ -91,7 +91,7 @@ class SampleData {
       Order(
         id: '8844',
         customer: c('c3', 'لیلا محمد', '0770 555 8899', 'دهۆک'),
-        status: OrderStatus.stitching,
+        status: OrderStatus.accepted,
         createdAt: ago(9),
         dueDate: ahead(4),
         discount: 10000,

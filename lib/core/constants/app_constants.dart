@@ -7,28 +7,14 @@ import '../theme/app_colors.dart';
 enum OrderStatus {
   pending, // waiting for the shop to accept
   accepted, // shop accepted the order
-  measured, // measurements taken
-  cutting, // fabric being cut
-  stitching, // sewing
-  trial, // trial / fitting
   ready, // ready for pickup or delivery
   delivered, // handed to the customer
-  cancelled, // cancelled
+  cancelled, // cancelled (off the normal flow)
 }
 
 extension OrderStatusX on OrderStatus {
   int get step {
-    const steps = [
-      OrderStatus.pending,
-      OrderStatus.accepted,
-      OrderStatus.measured,
-      OrderStatus.cutting,
-      OrderStatus.stitching,
-      OrderStatus.trial,
-      OrderStatus.ready,
-      OrderStatus.delivered,
-    ];
-    final i = steps.indexOf(this);
+    final i = orderFlow.indexOf(this);
     return i < 0 ? 0 : i;
   }
 
@@ -41,12 +27,6 @@ extension OrderStatusX on OrderStatus {
         return AppColors.stagePending;
       case OrderStatus.accepted:
         return AppColors.stageAccepted;
-      case OrderStatus.measured:
-      case OrderStatus.cutting:
-      case OrderStatus.stitching:
-        return AppColors.stageProducing;
-      case OrderStatus.trial:
-        return AppColors.stageTrial;
       case OrderStatus.ready:
         return AppColors.stageReady;
       case OrderStatus.delivered:
@@ -56,25 +36,17 @@ extension OrderStatusX on OrderStatus {
     }
   }
 
-  /// Kurdish (Sorani) label. Confirm wording with a native speaker.
+  /// Kurdish (Sorani) label.
   String get ku {
     switch (this) {
       case OrderStatus.pending:
         return 'چاوەڕوانی پەسەندکردن';
       case OrderStatus.accepted:
-        return 'پەسەندکرا';
-      case OrderStatus.measured:
-        return 'پێوانەکرا';
-      case OrderStatus.cutting:
-        return 'بڕین';
-      case OrderStatus.stitching:
-        return 'دوورین';
-      case OrderStatus.trial:
-        return 'تاقیکردنەوە';
+        return 'پەسەندکردن';
       case OrderStatus.ready:
         return 'ئامادەیە';
       case OrderStatus.delivered:
-        return 'گەیەندرا';
+        return 'گەیەنرا';
       case OrderStatus.cancelled:
         return 'هەڵوەشێنرا';
     }
@@ -86,14 +58,6 @@ extension OrderStatusX on OrderStatus {
         return 'Pending';
       case OrderStatus.accepted:
         return 'Accepted';
-      case OrderStatus.measured:
-        return 'Measured';
-      case OrderStatus.cutting:
-        return 'Cutting';
-      case OrderStatus.stitching:
-        return 'Stitching';
-      case OrderStatus.trial:
-        return 'Trial';
       case OrderStatus.ready:
         return 'Ready';
       case OrderStatus.delivered:
@@ -109,14 +73,6 @@ extension OrderStatusX on OrderStatus {
         return Icons.hourglass_top_rounded;
       case OrderStatus.accepted:
         return Icons.thumb_up_alt_rounded;
-      case OrderStatus.measured:
-        return Icons.straighten_rounded;
-      case OrderStatus.cutting:
-        return Icons.content_cut_rounded;
-      case OrderStatus.stitching:
-        return Icons.auto_fix_high_rounded;
-      case OrderStatus.trial:
-        return Icons.checkroom_rounded;
       case OrderStatus.ready:
         return Icons.verified_rounded;
       case OrderStatus.delivered:
@@ -126,6 +82,14 @@ extension OrderStatusX on OrderStatus {
     }
   }
 }
+
+/// The normal order flow: چاوەڕوانی پەسەندکردن → پەسەندکردن → ئامادەیە → گەیەنرا.
+const List<OrderStatus> orderFlow = [
+  OrderStatus.pending,
+  OrderStatus.accepted,
+  OrderStatus.ready,
+  OrderStatus.delivered,
+];
 
 /// Common garment types for a Kurdish tailor shop.
 class GarmentType {
@@ -175,15 +139,3 @@ class GarmentType {
     ),
   ];
 }
-
-/// The order lifecycle from pending to delivered (cancelled is off-flow).
-const List<OrderStatus> orderFlow = [
-  OrderStatus.pending,
-  OrderStatus.accepted,
-  OrderStatus.measured,
-  OrderStatus.cutting,
-  OrderStatus.stitching,
-  OrderStatus.trial,
-  OrderStatus.ready,
-  OrderStatus.delivered,
-];

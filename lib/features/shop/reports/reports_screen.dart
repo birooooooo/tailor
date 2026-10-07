@@ -56,7 +56,7 @@ class ReportsScreen extends StatelessWidget {
             const SizedBox(height: 20),
             SectionHeader(title: t.ordersTitle),
             const SizedBox(height: 10),
-            ...OrderStatus.values.map((s) {
+            ...orderFlow.map((s) {
               final count = provider.byStatus(s).length;
               final ratio = provider.orders.isEmpty
                   ? 0.0
