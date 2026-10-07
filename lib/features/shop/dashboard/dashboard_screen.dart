@@ -56,35 +56,10 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: BentoTile(
-                          icon: Icons.event_available_rounded,
-                          label: 'دەگات ئەمڕۆ',
-                          value: Fmt.number(provider.dueToday),
-                          color: AppColors.accent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Appear(
-                  delay: 130,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: BentoTile(
                           icon: Icons.verified_rounded,
                           label: 'ئامادەیە',
                           value: Fmt.number(ready),
                           color: AppColors.success,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: BentoTile(
-                          icon: Icons.assignment_return_rounded,
-                          label: t.statReturns,
-                          value: Fmt.number(provider.returnsCount),
-                          color: AppColors.error,
                         ),
                       ),
                     ],

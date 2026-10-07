@@ -19,7 +19,7 @@ void main() {
 
     expect(find.text('بەخێربێیتەوە'), findsOneWidget); // greeting
     expect(find.text('داهاتی ئەم مانگە'), findsOneWidget); // hero tile
-    expect(find.text('دەگات ئەمڕۆ'), findsOneWidget); // bento tile
+    expect(find.text('ئامادەیە'), findsOneWidget); // bento tile
   });
 
   testWidgets('Opening an order from the orders tab shows its details', (

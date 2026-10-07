@@ -78,27 +78,13 @@ class _ShopShellState extends State<ShopShell> {
             if (_fabOpen)
               Positioned(
                 bottom: 118,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _miniAction(
-                      Icons.add_circle_outline_rounded,
-                      t.newOrder,
-                      () {
-                        setState(() => _fabOpen = false);
-                        showNewOrderSheet(context);
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    _miniAction(
-                      Icons.person_add_alt_1_rounded,
-                      t.navCustomers,
-                      () => setState(() {
-                        _fabOpen = false;
-                        _index = 2;
-                      }),
-                    ),
-                  ],
+                child: _miniAction(
+                  Icons.add_circle_outline_rounded,
+                  t.newOrder,
+                  () {
+                    setState(() => _fabOpen = false);
+                    showNewOrderSheet(context);
+                  },
                 ),
               ),
             Positioned(
