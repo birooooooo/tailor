@@ -3,7 +3,6 @@
 // Run with:  flutter test --update-goldens test/screenshots_test.dart
 // Output:    test/goldens/*.png
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

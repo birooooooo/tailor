@@ -17,6 +17,7 @@ class SampleData {
     const upper = MeasurementSet(
       title: 'پێوانەکانی بەشی سەرەوە',
       fields: [
+        MeasurementField(label: 'سینگ', value: 96),
         MeasurementField(label: 'ئێخە', value: 42),
         MeasurementField(label: 'مل', value: 46),
         MeasurementField(label: 'شان', value: 16),

@@ -37,7 +37,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   DateTime _due = DateTime.now().add(const Duration(days: 7));
 
   final Map<String, TextEditingController> _upper = {
-    for (final l in const ['ئێخە', 'مل', 'شان', 'باڵ', 'قۆڵ'])
+    for (final l in const ['سینگ', 'ئێخە', 'مل', 'شان', 'باڵ', 'قۆڵ'])
       l: TextEditingController(),
   };
   final Map<String, TextEditingController> _lower = {
