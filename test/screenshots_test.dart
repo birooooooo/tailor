@@ -89,6 +89,14 @@ void main() {
       find.byType(TailorApp),
       matchesGoldenFile('goldens/04_new_order.png'),
     );
+
+    // Scroll to the bottom: customer name + phone sit just before Save.
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1600));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/05_new_order_bottom.png'),
+    );
   });
 
   testWidgets('dark mode dashboard', (tester) async {

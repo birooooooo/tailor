@@ -72,18 +72,6 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          _label(t.customerNameLabel),
-          TextField(
-            controller: _name,
-            decoration: InputDecoration(hintText: t.customerNameLabel),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _phone,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(hintText: t.phoneLabel),
-          ),
-          const SizedBox(height: 20),
           SectionHeader(title: t.garmentLabel),
           const SizedBox(height: 10),
           Wrap(
@@ -135,6 +123,18 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
             controller: _notes,
             maxLines: 3,
             decoration: InputDecoration(hintText: t.notesLabel),
+          ),
+          const SizedBox(height: 20),
+          _label(t.customerNameLabel),
+          TextField(
+            controller: _name,
+            decoration: InputDecoration(hintText: t.customerNameLabel),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _phone,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(hintText: t.phoneLabel),
           ),
           const SizedBox(height: 24),
           FilledButton.icon(
