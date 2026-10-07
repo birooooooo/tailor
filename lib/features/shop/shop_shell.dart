@@ -9,8 +9,8 @@ import 'orders/new_order_screen.dart';
 import 'orders/orders_screen.dart';
 import 'reports/reports_screen.dart';
 
-/// The tailor shop side of the app: floating bottom navigation with a
-/// morphing centre "+" button. Pages are created once and kept alive.
+/// The tailor shop side of the app: floating bottom navigation with a centre
+/// "+" button that opens the new-order screen directly.
 class ShopShell extends StatefulWidget {
   const ShopShell({super.key});
 
@@ -20,7 +20,6 @@ class ShopShell extends StatefulWidget {
 
 class _ShopShellState extends State<ShopShell> {
   int _index = 0;
-  bool _fabOpen = false;
 
   void _goOrders() => setState(() => _index = 1);
 
@@ -75,23 +74,11 @@ class _ShopShellState extends State<ShopShell> {
                 ),
               ),
             ),
-            if (_fabOpen)
-              Positioned(
-                bottom: 118,
-                child: _miniAction(
-                  Icons.add_circle_outline_rounded,
-                  t.newOrder,
-                  () {
-                    setState(() => _fabOpen = false);
-                    showNewOrderSheet(context);
-                  },
-                ),
-              ),
             Positioned(
               bottom: 40,
               child: Bouncy(
                 scale: 0.9,
-                onTap: () => setState(() => _fabOpen = !_fabOpen),
+                onTap: () => showNewOrderSheet(context),
                 child: Container(
                   width: 62,
                   height: 62,
@@ -100,15 +87,10 @@ class _ShopShellState extends State<ShopShell> {
                     shape: BoxShape.circle,
                     boxShadow: AppColors.shadow(opacity: 0.35),
                   ),
-                  child: AnimatedRotation(
-                    turns: _fabOpen ? 0.125 : 0,
-                    duration: const Duration(milliseconds: 220),
-                    curve: Curves.easeOutBack,
-                    child: const Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 32,
-                    ),
+                  child: const Icon(
+                    Icons.add_rounded,
+                    color: Colors.white,
+                    size: 32,
                   ),
                 ),
               ),
@@ -119,46 +101,11 @@ class _ShopShellState extends State<ShopShell> {
     );
   }
 
-  Widget _miniAction(IconData icon, String label, VoidCallback onTap) {
-    return Appear(
-      duration: 280,
-      slideFrom: 0.4,
-      child: Bouncy(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: AppColors.shadow(opacity: 0.22),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _navItem((IconData, String) item, int index) {
     final selected = _index == index;
     return Expanded(
       child: Bouncy(
-        onTap: () => setState(() {
-          _index = index;
-          _fabOpen = false;
-        }),
+        onTap: () => setState(() => _index = index),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

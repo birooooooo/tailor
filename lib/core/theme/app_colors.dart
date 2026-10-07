@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 /// A full colour set. Two of them exist: [AppPalette.light] and
 /// [AppPalette.dark]. The app swaps the active one when the theme changes.
+///
+/// Brand: Emerald `#0F5B4C` (main), Forest Green `#1E4738`,
+/// Cream `#F5F0E6`, Warm Sand `#D9CDBA`, Gold `#C9A84C`.
 class AppPalette {
   const AppPalette({
     required this.brightness,
@@ -63,59 +66,59 @@ class AppPalette {
 
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
-    primary: Color(0xFF4F46E5),
-    primaryDark: Color(0xFF3730A3),
-    accent: Color(0xFF8B5CF6),
-    accentSoft: Color(0xFFEDE9FE),
-    lime: Color(0xFFCBDD3C),
-    background: Color(0xFFF6F5FC),
+    primary: Color(0xFF0F5B4C), // Emerald
+    primaryDark: Color(0xFF1E4738), // Forest Green
+    accent: Color(0xFFC9A84C), // Gold
+    accentSoft: Color(0xFFE7DCC5), // Sand tint
+    lime: Color(0xFFC9A84C), // Gold
+    background: Color(0xFFF5F0E6), // Cream
     surface: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFF1EFFB),
-    border: Color(0xFFECEAF7),
-    textPrimary: Color(0xFF17142B),
-    textSecondary: Color(0xFF6B6785),
-    textMuted: Color(0xFF9C99B3),
-    success: Color(0xFF12B76A),
-    warning: Color(0xFFF79009),
-    error: Color(0xFFF04438),
-    info: Color(0xFF3B82F6),
-    stagePending: Color(0xFFF79009),
-    stageAccepted: Color(0xFF3B82F6),
-    stageProducing: Color(0xFF8B5CF6),
-    stageTrial: Color(0xFFEC4899),
-    stageReady: Color(0xFF12B76A),
-    stageDelivered: Color(0xFF64748B),
-    stageCancelled: Color(0xFFF04438),
-    brandGradient: [Color(0xFF6D5BFF), Color(0xFF8B5CF6), Color(0xFFA855F7)],
-    shadowBase: Color(0xFF4F46E5),
+    surfaceMuted: Color(0xFFEFE8D9), // Warm Sand tint
+    border: Color(0xFFE3D9C6),
+    textPrimary: Color(0xFF1A1F1B),
+    textSecondary: Color(0xFF5A655D),
+    textMuted: Color(0xFF8A9188),
+    success: Color(0xFF1E7A54),
+    warning: Color(0xFFC08A2E),
+    error: Color(0xFFB3402F),
+    info: Color(0xFF2F6F8F),
+    stagePending: Color(0xFFC08A2E),
+    stageAccepted: Color(0xFF2F6F8F),
+    stageProducing: Color(0xFF0F5B4C),
+    stageTrial: Color(0xFFC9A84C),
+    stageReady: Color(0xFF1E7A54),
+    stageDelivered: Color(0xFF6E6A60),
+    stageCancelled: Color(0xFFB3402F),
+    brandGradient: [Color(0xFF1E7A5F), Color(0xFF0F5B4C), Color(0xFF1E4738)],
+    shadowBase: Color(0xFF0F5B4C),
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    primary: Color(0xFF8B7BFF),
-    primaryDark: Color(0xFF5B4BE0),
-    accent: Color(0xFFA78BFA),
-    accentSoft: Color(0xFF2A2450),
-    lime: Color(0xFFCBDD3C),
-    background: Color(0xFF0E0C1B),
-    surface: Color(0xFF1A1730),
-    surfaceMuted: Color(0xFF221E3A),
-    border: Color(0xFF2C2750),
-    textPrimary: Color(0xFFF6F4FF),
-    textSecondary: Color(0xFFB9B3D6),
-    textMuted: Color(0xFF807AA3),
-    success: Color(0xFF34D399),
-    warning: Color(0xFFFBBF24),
-    error: Color(0xFFFB7185),
-    info: Color(0xFF60A5FA),
-    stagePending: Color(0xFFFBBF24),
-    stageAccepted: Color(0xFF60A5FA),
-    stageProducing: Color(0xFFA78BFA),
-    stageTrial: Color(0xFFF472B6),
-    stageReady: Color(0xFF34D399),
-    stageDelivered: Color(0xFF94A3B8),
-    stageCancelled: Color(0xFFFB7185),
-    brandGradient: [Color(0xFF7C6BFF), Color(0xFFA855F7), Color(0xFFC084FC)],
+    primary: Color(0xFF2E9E7C), // Emerald (brighter for dark)
+    primaryDark: Color(0xFF14634F),
+    accent: Color(0xFFD9B85C), // Gold
+    accentSoft: Color(0xFF1E3A31),
+    lime: Color(0xFFC9A84C),
+    background: Color(0xFF0A1512), // Deep forest-black
+    surface: Color(0xFF13231D),
+    surfaceMuted: Color(0xFF1B3028),
+    border: Color(0xFF254237),
+    textPrimary: Color(0xFFF5F0E6), // Cream
+    textSecondary: Color(0xFFC7BFAE), // Warm Sand
+    textMuted: Color(0xFF8FA096),
+    success: Color(0xFF3DBB84),
+    warning: Color(0xFFE0A93C),
+    error: Color(0xFFE8735F),
+    info: Color(0xFF5FA8C9),
+    stagePending: Color(0xFFE0A93C),
+    stageAccepted: Color(0xFF5FA8C9),
+    stageProducing: Color(0xFF2E9E7C),
+    stageTrial: Color(0xFFD9B85C),
+    stageReady: Color(0xFF3DBB84),
+    stageDelivered: Color(0xFF9AA39C),
+    stageCancelled: Color(0xFFE8735F),
+    brandGradient: [Color(0xFF2E9E7C), Color(0xFF14634F), Color(0xFF0F4738)],
     shadowBase: Color(0xFF000000),
   );
 }

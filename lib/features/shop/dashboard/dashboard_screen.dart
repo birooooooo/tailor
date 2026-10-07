@@ -114,10 +114,10 @@ class DashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF17142B), Color(0xFF4F46E5)],
+          colors: [AppColors.primaryDark, AppColors.primary],
         ),
         borderRadius: BorderRadius.circular(AppColors.rMd),
       ),
@@ -155,7 +155,7 @@ class DashboardScreen extends StatelessWidget {
                     child: Text(
                       t.viewUpdates,
                       style: const TextStyle(
-                        color: Color(0xFF17142B),
+                        color: Color(0xFF1A1F1B),
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -190,13 +190,9 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF6D5BFF), Color(0xFF8B5CF6), Color(0xFFA855F7)],
-        ),
-        borderRadius: BorderRadius.vertical(
+      decoration: BoxDecoration(
+        gradient: AppColors.brand,
+        borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(AppColors.rLg),
         ),
       ),

@@ -75,27 +75,19 @@ void main() {
     );
   });
 
-  testWidgets('fab menu + new order screenshots', (tester) async {
+  testWidgets('new order screenshot', (tester) async {
     _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
     await tester.tap(find.text('دوکانی دروین'));
     await tester.pumpAndSettle();
 
-    // Tap the centre "+" -> morphing menu.
+    // The centre "+" opens the new-order screen directly.
     await tester.tap(find.byIcon(Icons.add_rounded));
     await tester.pumpAndSettle();
     await expectLater(
       find.byType(TailorApp),
-      matchesGoldenFile('goldens/04_fab_menu.png'),
-    );
-
-    // Open the new order screen from the menu.
-    await tester.tap(find.text('داواکاری نوێ'));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byType(TailorApp),
-      matchesGoldenFile('goldens/05_new_order.png'),
+      matchesGoldenFile('goldens/04_new_order.png'),
     );
   });
 

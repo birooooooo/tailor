@@ -299,7 +299,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _costCard(AppLocalizations t, Order order) {
     return SoftCard(
-      gradient: const [Color(0xFF17142B), Color(0xFF312E81)],
+      gradient: [AppColors.primaryDark, AppColors.primary],
       shadowColor: AppColors.primaryDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
