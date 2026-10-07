@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../shop/shop_shell.dart';
 
 /// Entry choice: are you a customer or a tailor shop?
 /// Placeholder layout — will be refined once the Stitch design is reviewed.
@@ -61,7 +62,9 @@ class RoleSelectScreen extends StatelessWidget {
                 icon: Icons.storefront_outlined,
                 title: t.shopOwner,
                 color: AppColors.accent,
-                onTap: () => _soon(context),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ShopShell()),
+                ),
               ),
               const SizedBox(height: 32),
             ],

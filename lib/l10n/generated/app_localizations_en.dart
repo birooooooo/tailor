@@ -41,4 +41,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comingSoon => 'Coming soon';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navOrders => 'Orders';
+
+  @override
+  String get navCustomers => 'Customers';
+
+  @override
+  String get navReports => 'Reports';
+
+  @override
+  String get navSettings => 'Settings';
+
+  @override
+  String get greeting => 'Welcome back';
+
+  @override
+  String get newOrder => 'New order';
+
+  @override
+  String get statActiveOrders => 'Active orders';
+
+  @override
+  String get statMonthlyIncome => 'This month income';
+
+  @override
+  String get statReturns => 'Returns';
+
+  @override
+  String get recentOrders => 'Recent orders';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get announcements => 'Announcements';
+
+  @override
+  String get announcementBody =>
+      'Send your measurements and receive the garment at home.';
+
+  @override
+  String get viewUpdates => 'View updates';
+
+  @override
+  String get ordersTitle => 'Orders';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get noOrders => 'No orders yet';
+
+  @override
+  String get orderLabel => 'Order';
+
+  @override
+  String get orderDate => 'Created';
+
+  @override
+  String get pickupDate => 'Delivery date';
+
+  @override
+  String get progressTitle => 'Work progress';
+
+  @override
+  String get measurementsUpper => 'Upper measurements';
+
+  @override
+  String get measurementsLower => 'Lower measurements';
+
+  @override
+  String get referenceImage => 'Reference image';
+
+  @override
+  String get styleLabel => 'Style';
+
+  @override
+  String get costSummary => 'Cost summary';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get discountLabel => 'Discount';
+
+  @override
+  String get advanceLabel => 'Advance paid';
+
+  @override
+  String get remainingLabel => 'Remaining';
+
+  @override
+  String get recordPayment => 'Record payment';
+
+  @override
+  String get nextStage => 'Next stage';
+
+  @override
+  String get cancelOrder => 'Cancel order';
+
+  @override
+  String get tailorNotes => 'Tailor notes';
+
+  @override
+  String get deliverLabel => 'Mark delivered';
+
+  @override
+  String get customersTitle => 'Customers';
+
+  @override
+  String get ordersCount => 'orders';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get searchHint => 'Search...';
+
+  @override
+  String get priceLabel => 'Price';
+
+  @override
+  String get notesLabel => 'Notes';
+
+  @override
+  String get saveLabel => 'Save';
+
+  @override
+  String get customerNameLabel => 'Customer name';
+
+  @override
+  String get garmentLabel => 'Garment';
+
+  @override
+  String get dueDateLabel => 'Due date';
+
+  @override
+  String get orderSaved => 'Order saved';
 }

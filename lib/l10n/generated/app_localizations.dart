@@ -165,6 +165,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coming soon'**
   String get comingSoon;
+
+  /// No description provided for @navDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get navDashboard;
+
+  /// No description provided for @navOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get navOrders;
+
+  /// No description provided for @navCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get navCustomers;
+
+  /// No description provided for @navReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get navReports;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
+
+  /// No description provided for @greeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get greeting;
+
+  /// No description provided for @newOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'New order'**
+  String get newOrder;
+
+  /// No description provided for @statActiveOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Active orders'**
+  String get statActiveOrders;
+
+  /// No description provided for @statMonthlyIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'This month income'**
+  String get statMonthlyIncome;
+
+  /// No description provided for @statReturns.
+  ///
+  /// In en, this message translates to:
+  /// **'Returns'**
+  String get statReturns;
+
+  /// No description provided for @recentOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent orders'**
+  String get recentOrders;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @announcements.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get announcements;
+
+  /// No description provided for @announcementBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your measurements and receive the garment at home.'**
+  String get announcementBody;
+
+  /// No description provided for @viewUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'View updates'**
+  String get viewUpdates;
+
+  /// No description provided for @ordersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get ordersTitle;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @noOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get noOrders;
+
+  /// No description provided for @orderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get orderLabel;
+
+  /// No description provided for @orderDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get orderDate;
+
+  /// No description provided for @pickupDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery date'**
+  String get pickupDate;
+
+  /// No description provided for @progressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work progress'**
+  String get progressTitle;
+
+  /// No description provided for @measurementsUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper measurements'**
+  String get measurementsUpper;
+
+  /// No description provided for @measurementsLower.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower measurements'**
+  String get measurementsLower;
+
+  /// No description provided for @referenceImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference image'**
+  String get referenceImage;
+
+  /// No description provided for @styleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get styleLabel;
+
+  /// No description provided for @costSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost summary'**
+  String get costSummary;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @discountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get discountLabel;
+
+  /// No description provided for @advanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance paid'**
+  String get advanceLabel;
+
+  /// No description provided for @remainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get remainingLabel;
+
+  /// No description provided for @recordPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get recordPayment;
+
+  /// No description provided for @nextStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next stage'**
+  String get nextStage;
+
+  /// No description provided for @cancelOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get cancelOrder;
+
+  /// No description provided for @tailorNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Tailor notes'**
+  String get tailorNotes;
+
+  /// No description provided for @deliverLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark delivered'**
+  String get deliverLabel;
+
+  /// No description provided for @customersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get customersTitle;
+
+  /// No description provided for @ordersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'orders'**
+  String get ordersCount;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneLabel;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get searchHint;
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceLabel;
+
+  /// No description provided for @notesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesLabel;
+
+  /// No description provided for @saveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveLabel;
+
+  /// No description provided for @customerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get customerNameLabel;
+
+  /// No description provided for @garmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Garment'**
+  String get garmentLabel;
+
+  /// No description provided for @dueDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get dueDateLabel;
+
+  /// No description provided for @orderSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Order saved'**
+  String get orderSaved;
 }
 
 class _AppLocalizationsDelegate
