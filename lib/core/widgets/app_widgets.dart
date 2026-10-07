@@ -114,13 +114,26 @@ class BentoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onColor = light ? Colors.white : AppColors.textPrimary;
-    final sub = light ? Colors.white70 : AppColors.textSecondary;
+    final isSolid = light || gradient != null;
 
-    return SoftCard(
-      gradient: gradient,
-      shadowColor: gradient == null ? color : gradient!.first,
-      padding: const EdgeInsets.all(16),
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isSolid
+              ? (gradient ?? [color, color.withValues(alpha: 0.72)])
+              : [
+                  color.withValues(alpha: 0.20),
+                  color.withValues(alpha: 0.05),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(AppColors.rMd),
+        border: isSolid
+            ? null
+            : Border.all(color: color.withValues(alpha: 0.24)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,12 +142,12 @@ class BentoTile extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: light
+              color: isSolid
                   ? Colors.white.withValues(alpha: 0.22)
-                  : color.withValues(alpha: 0.14),
+                  : color,
               borderRadius: BorderRadius.circular(13),
             ),
-            child: Icon(icon, color: light ? Colors.white : color, size: 21),
+            child: Icon(icon, color: Colors.white, size: 21),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,18 +157,22 @@ class BentoTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: onColor,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.4,
+                  color: isSolid ? Colors.white : color,
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 2),
               Text(
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12, color: sub),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isSolid ? Colors.white70 : AppColors.textSecondary,
+                ),
               ),
             ],
           ),

@@ -58,16 +58,17 @@ class AppColors {
     colors: brandGradient,
   );
 
-  // Soft, colour-tinted shadows (not grey).
-  static List<BoxShadow> shadow({Color? color, double opacity = 0.12}) => [
+  // Soft, colour-tinted shadows. Kept light on purpose: big blurs are the
+  // most expensive thing to repaint on low-end phones.
+  static List<BoxShadow> shadow({Color? color, double opacity = 0.10}) => [
         BoxShadow(
           color: (color ?? primary).withValues(alpha: opacity),
-          blurRadius: 24,
-          offset: const Offset(0, 12),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
         ),
       ];
 
-  static List<BoxShadow> get softShadow => shadow(opacity: 0.06);
+  static List<BoxShadow> get softShadow => shadow(opacity: 0.05);
 
   // Radii
   static const double rSm = 14;
