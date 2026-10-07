@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/animations.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/effects.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 
@@ -42,16 +43,7 @@ class OrderTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  gradient: AppColors.brand,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(Icons.checkroom_rounded,
-                    color: Colors.white70, size: 23),
-              ),
+              _thumb(order),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -61,16 +53,17 @@ class OrderTile extends StatelessWidget {
                       order.customer.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
                         letterSpacing: -0.2,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       '${t.orderLabel} #${order.id}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textMuted,
                       ),
@@ -86,20 +79,46 @@ class OrderTile extends StatelessWidget {
                 children: [
                   Text(
                     Fmt.currency(order.payable),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.2,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Icon(Icons.chevron_left_rounded,
-                      color: AppColors.textMuted),
+                  Icon(Icons.chevron_left_rounded, color: AppColors.textMuted),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _thumb(Order order) {
+    final url = order.items.isNotEmpty ? order.items.first.imageUrl : null;
+    if (url != null) {
+      return RemotePhoto(
+        url: url,
+        height: 46,
+        width: 46,
+        radius: 14,
+        iconSize: 22,
+      );
+    }
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        gradient: AppColors.brand,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: const Icon(
+        Icons.checkroom_rounded,
+        color: Colors.white70,
+        size: 23,
       ),
     );
   }

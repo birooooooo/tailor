@@ -6,6 +6,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/effects.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 import '../../../providers/orders_provider.dart';
@@ -34,10 +35,14 @@ class OrderDetailsScreen extends StatelessWidget {
     final order = provider.byId(orderId);
 
     if (order == null) {
-      return Scaffold(appBar: AppBar(), body: EmptyState(text: t.noOrders));
+      return Scaffold(
+        appBar: AppBar(),
+        body: EmptyState(text: t.noOrders),
+      );
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('${t.orderLabel} #${order.id}'),
         actions: [
@@ -61,6 +66,16 @@ class OrderDetailsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _advance(
+    BuildContext context,
+    OrdersProvider provider,
+    Order order,
+    OrderStatus next,
+  ) {
+    provider.updateStatus(order.id, next);
+    if (next == OrderStatus.delivered) showConfetti(context);
   }
 
   // ---------------------------------------------------------------- customer
@@ -95,16 +110,17 @@ class OrderDetailsScreen extends StatelessWidget {
                   children: [
                     Text(
                       order.customer.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.2,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       '${t.phoneLabel}: ${order.customer.phone}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -144,12 +160,16 @@ class OrderDetailsScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
         ],
       ),
@@ -181,22 +201,21 @@ class OrderDetailsScreen extends StatelessWidget {
               if (canAdvance)
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () => provider.updateStatus(
-                        order.id, _flow[current + 1]),
+                    onPressed: () =>
+                        _advance(context, provider, order, _flow[current + 1]),
                     icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                    label: Text(
-                        '${t.nextStage}: ${_flow[current + 1].ku}'),
+                    label: Text('${t.nextStage}: ${_flow[current + 1].ku}'),
                   ),
                 ),
               if (canAdvance) const SizedBox(width: 10),
               if (isActive)
                 OutlinedButton(
-                  onPressed: () => provider.updateStatus(
-                      order.id, OrderStatus.cancelled),
+                  onPressed: () =>
+                      provider.updateStatus(order.id, OrderStatus.cancelled),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 54),
                     foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
+                    side: BorderSide(color: AppColors.error),
                   ),
                   child: Text(t.cancelOrder),
                 ),
@@ -237,7 +256,7 @@ class OrderDetailsScreen extends StatelessWidget {
         children: [
           Text(
             set.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
@@ -261,12 +280,15 @@ class OrderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           '$k: ',
-          style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
         ),
         Expanded(
           child: Text(
             v,
-            style: const TextStyle(fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
       ],
@@ -353,14 +375,17 @@ class OrderDetailsScreen extends StatelessWidget {
                       color: AppColors.success.withValues(alpha: 0.13),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.check_rounded,
-                        size: 17, color: AppColors.success),
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 17,
+                      color: AppColors.success,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       '${p.method} • ${Fmt.shortDate(p.date)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,
                       ),
@@ -391,10 +416,7 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           if (order.notes.isEmpty)
-            Text(
-              t.notesLabel,
-              style: const TextStyle(color: AppColors.textMuted),
-            )
+            Text(t.notesLabel, style: TextStyle(color: AppColors.textMuted))
           else
             ...order.notes.map(
               (n) => Padding(
@@ -406,7 +428,7 @@ class OrderDetailsScreen extends StatelessWidget {
                       width: 6,
                       height: 6,
                       margin: const EdgeInsets.only(top: 7),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.accent,
                         shape: BoxShape.circle,
                       ),
@@ -415,12 +437,16 @@ class OrderDetailsScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         n.text,
-                        style: const TextStyle(fontSize: 13, height: 1.7),
+                        style: TextStyle(
+                          fontSize: 13,
+                          height: 1.7,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
                     Text(
                       Fmt.shortDate(n.date),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: AppColors.textMuted,
                       ),
@@ -542,9 +568,7 @@ class _Timeline extends StatelessWidget {
                     child: Icon(
                       steps[i].icon,
                       size: 15,
-                      color: i <= current
-                          ? Colors.white
-                          : AppColors.textMuted,
+                      color: i <= current ? Colors.white : AppColors.textMuted,
                     ),
                   ),
                   if (i != steps.length - 1)
@@ -562,8 +586,9 @@ class _Timeline extends StatelessWidget {
                   steps[i].ku,
                   style: TextStyle(
                     fontSize: 13.5,
-                    fontWeight:
-                        i == current ? FontWeight.w800 : FontWeight.w500,
+                    fontWeight: i == current
+                        ? FontWeight.w800
+                        : FontWeight.w500,
                     color: i <= current
                         ? AppColors.textPrimary
                         : AppColors.textMuted,
@@ -597,7 +622,7 @@ class _MeasureBox extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
           Row(
@@ -608,14 +633,15 @@ class _MeasureBox extends StatelessWidget {
                 value == value.roundToDouble()
                     ? value.toInt().toString()
                     : value.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.3,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(width: 3),
-              const Text(
+              Text(
                 'سم',
                 style: TextStyle(fontSize: 10, color: AppColors.textMuted),
               ),

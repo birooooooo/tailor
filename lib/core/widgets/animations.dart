@@ -31,15 +31,16 @@ class Appear extends StatefulWidget {
   State<Appear> createState() => _AppearState();
 }
 
-class _AppearState extends State<Appear>
-    with SingleTickerProviderStateMixin {
+class _AppearState extends State<Appear> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
     duration: Duration(milliseconds: widget.duration),
   );
 
-  late final Animation<double> _curved =
-      CurvedAnimation(parent: _c, curve: widget.curve);
+  late final Animation<double> _curved = CurvedAnimation(
+    parent: _c,
+    curve: widget.curve,
+  );
 
   @override
   void initState() {
@@ -70,8 +71,7 @@ class _AppearState extends State<Appear>
           child: Transform.translate(
             offset: Offset(0, (1 - _curved.value) * widget.slideFrom * 120),
             child: Transform.scale(
-              scale: widget.scaleFrom +
-                  (1 - widget.scaleFrom) * _curved.value,
+              scale: widget.scaleFrom + (1 - widget.scaleFrom) * _curved.value,
               child: child,
             ),
           ),
@@ -83,12 +83,7 @@ class _AppearState extends State<Appear>
 
 /// Adds a quick spring "press" scale to anything tappable.
 class Bouncy extends StatefulWidget {
-  const Bouncy({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.scale = 0.95,
-  });
+  const Bouncy({super.key, required this.child, this.onTap, this.scale = 0.95});
 
   final Widget child;
   final VoidCallback? onTap;
@@ -98,8 +93,7 @@ class Bouncy extends StatefulWidget {
   State<Bouncy> createState() => _BouncyState();
 }
 
-class _BouncyState extends State<Bouncy>
-    with SingleTickerProviderStateMixin {
+class _BouncyState extends State<Bouncy> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 110),
@@ -155,10 +149,7 @@ class AnimatedCount extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, v, _) {
         final n = v.round();
-        return Text(
-          format?.call(n) ?? n.toString(),
-          style: style,
-        );
+        return Text(format?.call(n) ?? n.toString(), style: style);
       },
     );
   }

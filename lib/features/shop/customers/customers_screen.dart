@@ -16,6 +16,7 @@ class CustomersScreen extends StatelessWidget {
     final customers = provider.customers;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -25,15 +26,16 @@ class CustomersScreen extends StatelessWidget {
                 children: [
                   Text(
                     t.customersTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '${customers.length}',
-                    style: const TextStyle(color: AppColors.textMuted),
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
                 ],
               ),
@@ -56,8 +58,7 @@ class CustomersScreen extends StatelessWidget {
                       itemCount: customers.length,
                       itemBuilder: (_, i) {
                         final c = customers[i];
-                        final count =
-                            provider.ordersForCustomer(c.id);
+                        final count = provider.ordersForCustomer(c.id);
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           padding: const EdgeInsets.all(12),
@@ -70,11 +71,12 @@ class CustomersScreen extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 radius: 22,
-                                backgroundColor:
-                                    AppColors.accent.withValues(alpha: 0.18),
+                                backgroundColor: AppColors.accent.withValues(
+                                  alpha: 0.18,
+                                ),
                                 child: Text(
                                   c.name.characters.first,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -87,16 +89,17 @@ class CustomersScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       c.name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 15,
+                                        color: AppColors.textPrimary,
                                       ),
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
                                       '${c.phone}'
                                       '${c.area != null ? ' • ${c.area}' : ''}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 12,
                                         color: AppColors.textMuted,
                                       ),
@@ -109,14 +112,18 @@ class CustomersScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     '$count ${t.ordersCount}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Icon(Icons.call_outlined,
-                                      size: 18, color: AppColors.accent),
+                                  Icon(
+                                    Icons.call_outlined,
+                                    size: 18,
+                                    color: AppColors.accent,
+                                  ),
                                 ],
                               ),
                             ],

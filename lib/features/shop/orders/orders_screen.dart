@@ -34,6 +34,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -43,15 +44,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 children: [
                   Text(
                     t.ordersTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     '${provider.orders.length}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textMuted,
                       fontWeight: FontWeight.w600,
                     ),
@@ -103,12 +105,38 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       itemCount: list.length,
                       itemBuilder: (_, i) {
                         final order = list[i];
-                        return OrderTile(
-                          order: order,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  OrderDetailsScreen(orderId: order.id),
+                        return Dismissible(
+                          key: ValueKey(order.id),
+                          background: _swipe(
+                            AppColors.success,
+                            Icons.arrow_back_rounded,
+                            'قۆناغی داهاتوو',
+                            Alignment.centerRight,
+                          ),
+                          secondaryBackground: _swipe(
+                            AppColors.error,
+                            Icons.close_rounded,
+                            'هەڵوەشاندنەوە',
+                            Alignment.centerLeft,
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.startToEnd) {
+                              provider.advanceStatus(order.id);
+                            } else {
+                              provider.updateStatus(
+                                order.id,
+                                OrderStatus.cancelled,
+                              );
+                            }
+                            return false;
+                          },
+                          child: OrderTile(
+                            order: order,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    OrderDetailsScreen(orderId: order.id),
+                              ),
                             ),
                           ),
                         );
@@ -117,6 +145,29 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _swipe(Color color, IconData icon, String label, Alignment alignment) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(AppColors.rMd),
+      ),
+      alignment: alignment,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(color: color, fontWeight: FontWeight.w700),
+          ),
+        ],
       ),
     );
   }

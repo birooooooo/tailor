@@ -11,9 +11,8 @@ import '../../../models/order.dart';
 import '../../../providers/orders_provider.dart';
 
 Future<void> showNewOrderSheet(BuildContext context) {
-  return Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => const NewOrderScreen()),
-  );
+  return Navigator.of(context)
+      .push(MaterialPageRoute(builder: (_) => const NewOrderScreen()));
 }
 
 /// Create an order by hand — used for walk-in customers at the shop.
@@ -48,8 +47,15 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   @override
   void dispose() {
     for (final c in [
-      _name, _phone, _style, _notes, _price, _discount, _advance,
-      ..._upper.values, ..._lower.values,
+      _name,
+      _phone,
+      _style,
+      _notes,
+      _price,
+      _discount,
+      _advance,
+      ..._upper.values,
+      ..._lower.values,
     ]) {
       c.dispose();
     }
@@ -61,6 +67,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(t.newOrder)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -83,11 +90,13 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
             spacing: 8,
             runSpacing: 8,
             children: GarmentType.all
-                .map((g) => AppChip(
-                      label: g.ku,
-                      selected: _garment.id == g.id,
-                      onTap: () => setState(() => _garment = g),
-                    ))
+                .map(
+                  (g) => AppChip(
+                    label: g.ku,
+                    selected: _garment.id == g.id,
+                    onTap: () => setState(() => _garment = g),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 20),
@@ -95,7 +104,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
           const SizedBox(height: 10),
           TextField(
             controller: _style,
-            decoration: const InputDecoration(hintText: 'ستایلی سلێمانی کلاسیک'),
+            decoration: const InputDecoration(
+              hintText: 'ستایلی سلێمانی کلاسیک',
+            ),
           ),
           const SizedBox(height: 20),
           SectionHeader(title: t.measurementsUpper),
@@ -137,16 +148,16 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   }
 
   Widget _label(String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textSecondary,
+      ),
+    ),
+  );
 
   Widget _measureGrid(Map<String, TextEditingController> fields) {
     return Wrap(
@@ -158,8 +169,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
               width: 100,
               child: TextField(
                 controller: e.value,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                 ],
@@ -167,7 +179,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                   labelText: e.key,
                   labelStyle: const TextStyle(fontSize: 12),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                 ),
               ),
             ),
@@ -231,10 +245,12 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     List<MeasurementField> fields(Map<String, TextEditingController> m) => m
         .entries
         .where((e) => e.value.text.trim().isNotEmpty)
-        .map((e) => MeasurementField(
-              label: e.key,
-              value: double.tryParse(e.value.text) ?? 0,
-            ))
+        .map(
+          (e) => MeasurementField(
+            label: e.key,
+            value: double.tryParse(e.value.text) ?? 0,
+          ),
+        )
         .toList();
 
     final discount = int.tryParse(_discount.text) ?? 0;
@@ -273,12 +289,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
           : const [],
       notes: _notes.text.trim().isEmpty
           ? const []
-          : [
-              OrderNote(
-                text: _notes.text.trim(),
-                date: DateTime.now(),
-              ),
-            ],
+          : [OrderNote(text: _notes.text.trim(), date: DateTime.now())],
     );
 
     context.read<OrdersProvider>().addOrder(order);

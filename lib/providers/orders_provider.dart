@@ -79,6 +79,15 @@ class OrdersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Moves an order one stage forward (used by swipe-to-advance).
+  void advanceStatus(String id) {
+    final order = byId(id);
+    if (order == null || !order.status.isActive) return;
+    final i = orderFlow.indexOf(order.status);
+    if (i < 0 || i >= orderFlow.length - 1) return;
+    updateStatus(id, orderFlow[i + 1]);
+  }
+
   void addPayment(String id, int amount) {
     final i = _indexOf(id);
     if (i == -1) return;
@@ -97,7 +106,10 @@ class OrdersProvider extends ChangeNotifier {
     if (i == -1) return;
     final order = _orders[i];
     _orders[i] = order.copyWith(
-      notes: [...order.notes, OrderNote(text: text, date: DateTime.now())],
+      notes: [
+        ...order.notes,
+        OrderNote(text: text, date: DateTime.now()),
+      ],
     );
     notifyListeners();
   }

@@ -9,6 +9,13 @@ class SampleData {
   static const String shopName = 'خەیاتی و بەرگەڕۆیی شاڵ';
   static const String shopOwner = 'شاڵ';
 
+  /// Background photo for the dashboard header.
+  static const String headerImage =
+      'https://loremflickr.com/800/500/tailor,suit?lock=9';
+
+  static String _photo(int n) =>
+      'https://loremflickr.com/600/400/suit,tailor?lock=$n';
+
   static List<Order> orders() {
     final now = DateTime.now();
     DateTime ago(int days) => now.subtract(Duration(days: days));
@@ -45,14 +52,15 @@ class SampleData {
         createdAt: ago(6),
         dueDate: ahead(1),
         discount: 15000,
-        items: const [
+        items: [
           OrderItem(
             garment: 'کراس و شەروال',
             style: 'ستایلی سلێمانی کلاسیک',
             unitPrice: 285000,
-            colors: ['شین', 'زێو'],
-            fabrics: ['شاڵ باڵ کۆن'],
-            measurements: [upper, lower],
+            imageUrl: _photo(1),
+            colors: const ['شین', 'زێو'],
+            fabrics: const ['شاڵ باڵ کۆن'],
+            measurements: const [upper, lower],
           ),
         ],
         payments: [Payment(amount: 100000, date: ago(6))],
@@ -69,12 +77,13 @@ class SampleData {
         status: OrderStatus.pending,
         createdAt: ago(1),
         dueDate: ahead(9),
-        items: const [
+        items: [
           OrderItem(
             garment: 'کراس و شەروال',
             style: 'ستایلی هەورامانی کلاسیک',
             unitPrice: 240000,
-            measurements: [upper, lower],
+            imageUrl: _photo(2),
+            measurements: const [upper, lower],
           ),
         ],
         payments: const [],
@@ -86,12 +95,13 @@ class SampleData {
         createdAt: ago(9),
         dueDate: ahead(4),
         discount: 10000,
-        items: const [
+        items: [
           OrderItem(
             garment: 'کراسی ئافرەتان',
             style: 'دیزاینی ئێرانی',
             unitPrice: 320000,
-            measurements: [upper, lower],
+            imageUrl: _photo(3),
+            measurements: const [upper, lower],
           ),
         ],
         payments: [
@@ -105,12 +115,13 @@ class SampleData {
         status: OrderStatus.ready,
         createdAt: ago(12),
         dueDate: ahead(0),
-        items: const [
+        items: [
           OrderItem(
             garment: 'چاکەت',
             style: 'ستایلی بادینی',
             unitPrice: 195000,
-            measurements: [upper],
+            imageUrl: _photo(4),
+            measurements: const [upper],
           ),
         ],
         payments: [Payment(amount: 195000, date: ago(12))],
@@ -121,12 +132,13 @@ class SampleData {
         status: OrderStatus.accepted,
         createdAt: ago(2),
         dueDate: ahead(7),
-        items: const [
+        items: [
           OrderItem(
             garment: 'شەروال',
             style: 'ستایلی مەهاباد',
             unitPrice: 120000,
-            measurements: [lower],
+            imageUrl: _photo(5),
+            measurements: const [lower],
           ),
         ],
         payments: const [],
@@ -137,12 +149,13 @@ class SampleData {
         status: OrderStatus.delivered,
         createdAt: ago(20),
         dueDate: ago(4),
-        items: const [
+        items: [
           OrderItem(
             garment: 'کراس',
             style: 'ستایلی ستار خەیی',
             unitPrice: 140000,
-            measurements: [upper],
+            imageUrl: _photo(6),
+            measurements: const [upper],
           ),
         ],
         payments: [Payment(amount: 140000, date: ago(4))],

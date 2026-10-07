@@ -1,52 +1,58 @@
 import 'package:flutter/material.dart';
+
 import 'app_colors.dart';
 
-/// App typography + theme.
-/// Uses the bundled Vazirmatn font, which supports Kurdish/Arabic letters.
+/// App typography + theme. Uses the bundled Vazirmatn font, which supports
+/// Kurdish/Arabic letters.
 class AppTheme {
   AppTheme._();
 
   static const String fontFamily = 'Vazirmatn';
 
-  static ThemeData get light {
-    const scheme = ColorScheme.light(
-      primary: AppColors.primary,
+  static ThemeData get light => _build(AppPalette.light);
+  static ThemeData get dark => _build(AppPalette.dark);
+
+  static ThemeData _build(AppPalette p) {
+    final scheme = ColorScheme(
+      brightness: p.brightness,
+      primary: p.primary,
       onPrimary: Colors.white,
-      secondary: AppColors.accent,
+      secondary: p.accent,
       onSecondary: Colors.white,
-      surface: AppColors.surface,
-      onSurface: AppColors.textPrimary,
-      error: AppColors.error,
+      surface: p.surface,
+      onSurface: p.textPrimary,
+      error: p.error,
+      onError: Colors.white,
     );
 
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       fontFamily: fontFamily,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: p.background,
     );
 
     return base.copyWith(
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: p.textPrimary,
         titleTextStyle: TextStyle(
           fontFamily: fontFamily,
           fontSize: 19,
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: p.textPrimary,
         ),
       ),
       textTheme: base.textTheme.apply(
         fontFamily: fontFamily,
-        bodyColor: AppColors.textPrimary,
-        displayColor: AppColors.textPrimary,
+        bodyColor: p.textPrimary,
+        displayColor: p.textPrimary,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: p.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppColors.rMd),
@@ -54,26 +60,28 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        fillColor: p.surface,
+        hintStyle: TextStyle(color: p.textMuted, fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 15,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppColors.rSm),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppColors.rSm),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: p.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppColors.rSm),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+          borderSide: BorderSide(color: p.primary, width: 1.6),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: p.primary,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(54),
           shape: RoundedRectangleBorder(
@@ -88,21 +96,18 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.textPrimary,
+          foregroundColor: p.textPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppColors.rSm),
           ),
-          side: const BorderSide(color: AppColors.border),
+          side: BorderSide(color: p.border),
           textStyle: const TextStyle(
             fontFamily: fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-      dividerTheme: const DividerThemeData(
-        color: AppColors.border,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: p.border, thickness: 1),
       splashFactory: InkSparkle.splashFactory,
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {

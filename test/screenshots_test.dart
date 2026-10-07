@@ -7,8 +7,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 import 'package:tailor_app/main.dart';
+import 'package:tailor_app/providers/theme_provider.dart';
 
 Future<void> _loadFonts() async {
   final loader = FontLoader('Vazirmatn');
@@ -29,6 +31,13 @@ Future<void> _loadFonts() async {
   }
 }
 
+void _sizePhone(WidgetTester tester) {
+  tester.view.physicalSize = const Size(390 * 2, 844 * 2);
+  tester.view.devicePixelRatio = 2.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -36,11 +45,7 @@ void main() {
   });
 
   testWidgets('shop screenshots', (tester) async {
-    tester.view.physicalSize = const Size(390 * 2, 844 * 2);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
+    _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
 
@@ -70,24 +75,49 @@ void main() {
     );
   });
 
-  testWidgets('new order screenshot', (tester) async {
-    tester.view.physicalSize = const Size(390 * 2, 844 * 2);
-    tester.view.devicePixelRatio = 2.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
+  testWidgets('fab menu + new order screenshots', (tester) async {
+    _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
     await tester.tap(find.text('دوکانی دروین'));
     await tester.pumpAndSettle();
 
-    // Tap the centre "+" button.
+    // Tap the centre "+" -> morphing menu.
     await tester.tap(find.byIcon(Icons.add_rounded));
     await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/04_fab_menu.png'),
+    );
+
+    // Open the new order screen from the menu.
+    await tester.tap(find.text('داواکاری نوێ'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/05_new_order.png'),
+    );
+  });
+
+  testWidgets('dark mode dashboard', (tester) async {
+    _sizePhone(tester);
+    await tester.pumpWidget(const TailorApp());
+    await tester.pumpAndSettle();
+
+    // Go to the shop while still light.
+    await tester.tap(find.text('دوکانی دروین'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+
+    // Toggle dark mode.
+    final ctx = tester.element(find.byType(MaterialApp));
+    Provider.of<ThemeProvider>(ctx, listen: false).setDark(true);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 900));
 
     await expectLater(
       find.byType(TailorApp),
-      matchesGoldenFile('goldens/04_new_order.png'),
+      matchesGoldenFile('goldens/06_dark_dashboard.png'),
     );
   });
 }

@@ -124,10 +124,7 @@ class BentoTile extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: isSolid
               ? (gradient ?? [color, color.withValues(alpha: 0.72)])
-              : [
-                  color.withValues(alpha: 0.20),
-                  color.withValues(alpha: 0.05),
-                ],
+              : [color.withValues(alpha: 0.20), color.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(AppColors.rMd),
         border: isSolid
@@ -142,9 +139,7 @@ class BentoTile extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isSolid
-                  ? Colors.white.withValues(alpha: 0.22)
-                  : color,
+              color: isSolid ? Colors.white.withValues(alpha: 0.22) : color,
               borderRadius: BorderRadius.circular(13),
             ),
             child: Icon(icon, color: Colors.white, size: 21),
@@ -201,7 +196,7 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -213,7 +208,7 @@ class SectionHeader extends StatelessWidget {
             onTap: onAction,
             child: Text(
               actionText!,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
@@ -262,7 +257,7 @@ class PhotoBox extends StatelessWidget {
 
   Widget _placeholder() {
     return Container(
-      decoration: const BoxDecoration(gradient: AppColors.brand),
+      decoration: BoxDecoration(gradient: AppColors.brand),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -308,7 +303,7 @@ class EmptyState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),

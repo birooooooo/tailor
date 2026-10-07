@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../shop/shop_shell.dart';
@@ -13,6 +14,7 @@ class RoleSelectScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -20,13 +22,12 @@ class RoleSelectScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              const Icon(Icons.content_cut,
-                  size: 64, color: AppColors.accent),
+              Icon(Icons.content_cut, size: 64, color: AppColors.accent),
               const SizedBox(height: 16),
               Text(
                 t.appName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 34,
                   fontWeight: FontWeight.w700,
                   color: AppColors.primary,
@@ -36,19 +37,13 @@ class RoleSelectScreen extends StatelessWidget {
               Text(
                 t.tagline,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
               const Spacer(),
               Text(
                 t.continueAs,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textMuted,
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
               const SizedBox(height: 12),
               _RoleCard(
@@ -62,9 +57,8 @@ class RoleSelectScreen extends StatelessWidget {
                 icon: Icons.storefront_outlined,
                 title: t.shopOwner,
                 color: AppColors.accent,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ShopShell()),
-                ),
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const ShopShell())),
               ),
               const SizedBox(height: 32),
             ],
@@ -76,9 +70,8 @@ class RoleSelectScreen extends StatelessWidget {
 
   void _soon(BuildContext context) {
     final t = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(t.comingSoon)),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(t.comingSoon)));
   }
 }
 
@@ -124,15 +117,18 @@ class _RoleCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_back_ios_new,
-                  size: 16, color: AppColors.textMuted),
+              Icon(
+                Icons.arrow_back_ios_new,
+                size: 16,
+                color: AppColors.textMuted,
+              ),
             ],
           ),
         ),

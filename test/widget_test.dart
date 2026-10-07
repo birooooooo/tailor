@@ -22,8 +22,9 @@ void main() {
     expect(find.text('دەگات ئەمڕۆ'), findsOneWidget); // bento tile
   });
 
-  testWidgets('Opening an order from the orders tab shows its details',
-      (tester) async {
+  testWidgets('Opening an order from the orders tab shows its details', (
+    tester,
+  ) async {
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
 

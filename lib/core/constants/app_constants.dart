@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_colors.dart';
 
 /// Order lifecycle. The customer and the shop both see the SAME status,
@@ -141,11 +142,48 @@ class GarmentType {
   });
 
   static const List<GarmentType> all = [
-    GarmentType(id: 'kras', ku: 'کراس', en: 'Shirt/Dress', icon: Icons.checkroom),
-    GarmentType(id: 'shalwar', ku: 'شلوار', en: 'Trousers', icon: Icons.dry_cleaning),
-    GarmentType(id: 'jaket', ku: 'چاکەت', en: 'Jacket', icon: Icons.dry_cleaning_outlined),
+    GarmentType(
+      id: 'kras',
+      ku: 'کراس',
+      en: 'Shirt/Dress',
+      icon: Icons.checkroom,
+    ),
+    GarmentType(
+      id: 'shalwar',
+      ku: 'شلوار',
+      en: 'Trousers',
+      icon: Icons.dry_cleaning,
+    ),
+    GarmentType(
+      id: 'jaket',
+      ku: 'چاکەت',
+      en: 'Jacket',
+      icon: Icons.dry_cleaning_outlined,
+    ),
     GarmentType(id: 'abaya', ku: 'عەبا', en: 'Abaya', icon: Icons.woman),
-    GarmentType(id: 'kras_afratan', ku: 'کراسی ئافرەتان', en: 'Women\'s dress', icon: Icons.woman_2),
-    GarmentType(id: 'zir', ku: 'جلوبەرگی منداڵان', en: 'Kids wear', icon: Icons.child_care),
+    GarmentType(
+      id: 'kras_afratan',
+      ku: 'کراسی ئافرەتان',
+      en: 'Women\'s dress',
+      icon: Icons.woman_2,
+    ),
+    GarmentType(
+      id: 'zir',
+      ku: 'جلوبەرگی منداڵان',
+      en: 'Kids wear',
+      icon: Icons.child_care,
+    ),
   ];
 }
+
+/// The order lifecycle from pending to delivered (cancelled is off-flow).
+const List<OrderStatus> orderFlow = [
+  OrderStatus.pending,
+  OrderStatus.accepted,
+  OrderStatus.measured,
+  OrderStatus.cutting,
+  OrderStatus.stitching,
+  OrderStatus.trial,
+  OrderStatus.ready,
+  OrderStatus.delivered,
+];
