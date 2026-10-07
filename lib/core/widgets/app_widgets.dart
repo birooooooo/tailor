@@ -3,7 +3,59 @@ import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
 
-/// Small coloured chip showing an order status.
+/// A white card with a large radius and a soft, colour-tinted shadow.
+class SoftCard extends StatelessWidget {
+  const SoftCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.color,
+    this.gradient,
+    this.shadowColor,
+    this.radius = AppColors.rMd,
+    this.onTap,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final Color? color;
+  final List<Color>? gradient;
+  final Color? shadowColor;
+  final double radius;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: gradient == null ? (color ?? AppColors.surface) : null,
+        gradient: gradient == null
+            ? null
+            : LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: gradient!,
+              ),
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: AppColors.shadow(color: shadowColor, opacity: 0.10),
+      ),
+      child: child,
+    );
+
+    if (onTap == null) return content;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(radius),
+        child: content,
+      ),
+    );
+  }
+}
+
+/// Small coloured chip showing an order status, with an icon.
 class StatusChip extends StatelessWidget {
   const StatusChip(this.status, {super.key, this.compact = false});
 
@@ -15,81 +67,97 @@ class StatusChip extends StatelessWidget {
     final color = status.color;
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 10,
-        vertical: compact ? 4 : 6,
+        horizontal: compact ? 8 : 11,
+        vertical: compact ? 5 : 7,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(30),
       ),
-      child: Text(
-        status.ku,
-        style: TextStyle(
-          color: color,
-          fontSize: compact ? 11 : 12,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(status.icon, size: compact ? 12 : 14, color: color),
+          const SizedBox(width: 5),
+          Text(
+            status.ku,
+            style: TextStyle(
+              color: color,
+              fontSize: compact ? 11 : 12.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Dashboard statistic card.
-class StatCard extends StatelessWidget {
-  const StatCard({
+/// Bento-style dashboard tile.
+class BentoTile extends StatelessWidget {
+  const BentoTile({
     super.key,
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    this.gradient,
+    this.light = false,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final Color color;
+  final List<Color>? gradient;
+  final bool light;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    final onColor = light ? Colors.white : AppColors.textPrimary;
+    final sub = light ? Colors.white70 : AppColors.textSecondary;
+
+    return SoftCard(
+      gradient: gradient,
+      shadowColor: gradient == null ? color : gradient!.first,
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: light
+                  ? Colors.white.withValues(alpha: 0.22)
+                  : color.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(13),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: light ? Colors.white : color, size: 21),
           ),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: onColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12, color: sub),
+              ),
+            ],
           ),
         ],
       ),
@@ -113,33 +181,25 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 4,
-          height: 18,
-          decoration: BoxDecoration(
-            color: AppColors.accent,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        const SizedBox(width: 8),
         Expanded(
           child: Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
             ),
           ),
         ),
         if (actionText != null)
-          TextButton(
-            onPressed: onAction,
+          GestureDetector(
+            onTap: onAction,
             child: Text(
               actionText!,
               style: const TextStyle(
-                color: AppColors.accent,
-                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
               ),
             ),
           ),
@@ -154,7 +214,7 @@ class PhotoBox extends StatelessWidget {
     super.key,
     this.imageUrl,
     this.height = 160,
-    this.radius = 18,
+    this.radius = AppColors.rMd,
     this.icon = Icons.checkroom,
     this.label,
   });
@@ -185,22 +245,16 @@ class PhotoBox extends StatelessWidget {
 
   Widget _placeholder() {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2A3A5E), Color(0xFF14213D)],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: AppColors.brand),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.white24, size: 44),
+          Icon(icon, color: Colors.white38, size: 44),
           if (label != null) ...[
             const SizedBox(height: 8),
             Text(
               label!,
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],
         ],
@@ -225,11 +279,22 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 56, color: AppColors.textMuted),
-          const SizedBox(height: 12),
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: AppColors.accentSoft,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Icon(icon, size: 44, color: AppColors.primary),
+          ),
+          const SizedBox(height: 16),
           Text(
             text,
-            style: const TextStyle(color: AppColors.textSecondary),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -252,27 +317,24 @@ class AppChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: selected ? AppColors.primary : AppColors.surface,
-      borderRadius: BorderRadius.circular(30),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: selected ? Colors.white : AppColors.textSecondary,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.surface,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: selected
+              ? AppColors.shadow(opacity: 0.25)
+              : AppColors.softShadow,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: selected ? Colors.white : AppColors.textSecondary,
           ),
         ),
       ),

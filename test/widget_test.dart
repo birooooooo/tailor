@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tailor_app/main.dart';
@@ -10,8 +9,7 @@ void main() {
     expect(find.text('تەرز'), findsOneWidget);
   });
 
-  testWidgets('Shop dashboard opens with stats and recent orders',
-      (tester) async {
+  testWidgets('Shop dashboard shows greeting and stats', (tester) async {
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
 
@@ -19,15 +17,21 @@ void main() {
     await tester.tap(find.text('دوکانی دروین'));
     await tester.pumpAndSettle();
 
-    expect(find.text('داواکاری نوێ'), findsOneWidget); // New order button
-    expect(find.text('دوایین داواکارییەکان'), findsOneWidget);
-    expect(find.text('داریا کاروان'), findsOneWidget);
+    expect(find.text('بەخێربێیتەوە'), findsOneWidget); // greeting
+    expect(find.text('داهاتی ئەم مانگە'), findsOneWidget); // hero tile
+    expect(find.text('دەگات ئەمڕۆ'), findsOneWidget); // bento tile
   });
 
-  testWidgets('Opening an order shows its details', (tester) async {
+  testWidgets('Opening an order from the orders tab shows its details',
+      (tester) async {
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
+
     await tester.tap(find.text('دوکانی دروین'));
+    await tester.pumpAndSettle();
+
+    // Switch to the orders tab via the bottom navigation.
+    await tester.tap(find.text('داواکارییەکان'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('داریا کاروان').first);

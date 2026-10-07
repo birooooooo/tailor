@@ -101,6 +101,29 @@ extension OrderStatusX on OrderStatus {
         return 'Cancelled';
     }
   }
+
+  IconData get icon {
+    switch (this) {
+      case OrderStatus.pending:
+        return Icons.hourglass_top_rounded;
+      case OrderStatus.accepted:
+        return Icons.thumb_up_alt_rounded;
+      case OrderStatus.measured:
+        return Icons.straighten_rounded;
+      case OrderStatus.cutting:
+        return Icons.content_cut_rounded;
+      case OrderStatus.stitching:
+        return Icons.auto_fix_high_rounded;
+      case OrderStatus.trial:
+        return Icons.checkroom_rounded;
+      case OrderStatus.ready:
+        return Icons.verified_rounded;
+      case OrderStatus.delivered:
+        return Icons.local_shipping_rounded;
+      case OrderStatus.cancelled:
+        return Icons.cancel_rounded;
+    }
+  }
 }
 
 /// Common garment types for a Kurdish tailor shop.

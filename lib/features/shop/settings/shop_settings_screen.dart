@@ -40,8 +40,8 @@ class ShopSettingsScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppColors.rSm),
+        boxShadow: AppColors.softShadow,
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),

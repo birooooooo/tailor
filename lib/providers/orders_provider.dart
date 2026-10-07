@@ -32,6 +32,17 @@ class OrdersProvider extends ChangeNotifier {
   int get returnsCount =>
       _orders.where((o) => o.status == OrderStatus.cancelled).length;
 
+  /// Active orders whose delivery date is today.
+  int get dueToday {
+    final now = DateTime.now();
+    return _orders.where((o) {
+      return o.status.isActive &&
+          o.dueDate.year == now.year &&
+          o.dueDate.month == now.month &&
+          o.dueDate.day == now.day;
+    }).length;
+  }
+
   /// Distinct customers, newest order first.
   List<Customer> get customers {
     final seen = <String, Customer>{};

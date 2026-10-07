@@ -10,7 +10,7 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 import '../../../providers/orders_provider.dart';
 
-/// Full details of one order: status control, measurements, money and notes.
+/// Full details of one order: a status timeline, measurements, money, notes.
 class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({super.key, required this.orderId});
 
@@ -48,15 +48,15 @@ class OrderDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
           _customerCard(t, order),
-          const SizedBox(height: 18),
-          _progress(context, t, provider, order),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
+          _progressCard(context, t, provider, order),
+          const SizedBox(height: 14),
           ...order.items.expand(_itemSection),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           _costCard(t, order),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           _payments(context, t, order),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           _notes(context, t, order),
         ],
       ),
@@ -66,26 +66,25 @@ class OrderDetailsScreen extends StatelessWidget {
   // ---------------------------------------------------------------- customer
 
   Widget _customerCard(AppLocalizations t, Order order) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    return SoftCard(
       child: Column(
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: AppColors.brand,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                alignment: Alignment.center,
                 child: Text(
                   order.customer.name.characters.first,
                   style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20,
                   ),
                 ),
               ),
@@ -98,10 +97,11 @@ class OrderDetailsScreen extends StatelessWidget {
                       order.customer.name,
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       '${t.phoneLabel}: ${order.customer.phone}',
                       style: const TextStyle(
@@ -115,21 +115,15 @@ class OrderDetailsScreen extends StatelessWidget {
               StatusChip(order.status),
             ],
           ),
-          const Divider(height: 26),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
-                child: _dateBox(
-                  t.orderDate,
-                  Fmt.shortDate(order.createdAt),
-                ),
+                child: _dateBox(t.orderDate, Fmt.shortDate(order.createdAt)),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: _dateBox(
-                  t.pickupDate,
-                  Fmt.shortDate(order.dueDate),
-                ),
+                child: _dateBox(t.pickupDate, Fmt.shortDate(order.dueDate)),
               ),
             ],
           ),
@@ -140,28 +134,22 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _dateBox(String label, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
         color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textMuted,
-            ),
+            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -170,7 +158,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   // ---------------------------------------------------------------- progress
 
-  Widget _progress(
+  Widget _progressCard(
     BuildContext context,
     AppLocalizations t,
     OrdersProvider provider,
@@ -180,50 +168,14 @@ class OrderDetailsScreen extends StatelessWidget {
     final isActive = order.status.isActive;
     final canAdvance = isActive && current < _flow.length - 1;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(child: SectionHeader(title: t.progressTitle)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: List.generate(_flow.length, (i) {
-              final done = i <= current;
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Container(
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: done
-                          ? order.status.color
-                          : AppColors.border,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            order.status.ku,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: order.status.color,
-            ),
-          ),
+          SectionHeader(title: t.progressTitle),
           const SizedBox(height: 14),
+          _Timeline(current: current, color: order.status.color),
+          const SizedBox(height: 18),
           Row(
             children: [
               if (canAdvance)
@@ -231,18 +183,18 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: () => provider.updateStatus(
                         order.id, _flow[current + 1]),
-                    icon: const Icon(Icons.arrow_forward, size: 18),
+                    icon: const Icon(Icons.arrow_back_rounded, size: 18),
                     label: Text(
                         '${t.nextStage}: ${_flow[current + 1].ku}'),
                   ),
                 ),
-              if (canAdvance && isActive) const SizedBox(width: 10),
+              if (canAdvance) const SizedBox(width: 10),
               if (isActive)
                 OutlinedButton(
                   onPressed: () => provider.updateStatus(
                       order.id, OrderStatus.cancelled),
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 52),
+                    minimumSize: const Size(0, 54),
                     foregroundColor: AppColors.error,
                     side: const BorderSide(color: AppColors.error),
                   ),
@@ -259,28 +211,27 @@ class OrderDetailsScreen extends StatelessWidget {
 
   List<Widget> _itemSection(OrderItem item) {
     return [
-      const SizedBox(height: 4),
       SectionHeader(title: item.garment),
       const SizedBox(height: 10),
       PhotoBox(
         imageUrl: item.imageUrl,
-        height: 170,
+        height: 180,
         label: 'وێنەی حەقی',
         icon: Icons.image_outlined,
       ),
       const SizedBox(height: 12),
       if (item.style != null) ...[
         _kvText('شێواز', item.style!),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
       ],
       ...item.measurements.map(_measureSet),
-      const SizedBox(height: 8),
+      const SizedBox(height: 6),
     ];
   }
 
   Widget _measureSet(MeasurementSet set) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -292,7 +243,7 @@ class OrderDetailsScreen extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 10,
             runSpacing: 10,
@@ -315,7 +266,7 @@ class OrderDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             v,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ),
       ],
@@ -325,69 +276,62 @@ class OrderDetailsScreen extends StatelessWidget {
   // ------------------------------------------------------------------- money
 
   Widget _costCard(AppLocalizations t, Order order) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    return SoftCard(
+      gradient: const [Color(0xFF17142B), Color(0xFF312E81)],
+      shadowColor: AppColors.primaryDark,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: t.costSummary),
-          const SizedBox(height: 12),
+          Text(
+            t.remainingLabel,
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            Fmt.currency(order.remaining),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 16),
           _moneyRow(t.totalLabel, Fmt.currency(order.subtotal)),
           if (order.discount > 0)
-            _moneyRow(
-              t.discountLabel,
-              '- ${Fmt.currency(order.discount)}',
-              color: AppColors.error,
+            _moneyRow(t.discountLabel, '- ${Fmt.currency(order.discount)}'),
+          _moneyRow(t.advanceLabel, Fmt.currency(order.paid)),
+        ],
+      ),
+    );
+  }
+
+  Widget _moneyRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white60, fontSize: 13.5),
             ),
-          _moneyRow(t.advanceLabel, Fmt.currency(order.paid),
-              color: AppColors.success),
-          const Divider(height: 22),
-          _moneyRow(
-            t.remainingLabel,
-            Fmt.currency(order.remaining),
-            bold: true,
-            color: order.remaining > 0 ? AppColors.accent : AppColors.success,
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 13.5,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _moneyRow(
-    String label,
-    String value, {
-    bool bold = false,
-    Color? color,
-  }) {
-    final style = TextStyle(
-      fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
-      fontSize: bold ? 16 : 14,
-      color: color ?? AppColors.textPrimary,
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          Expanded(child: Text(label, style: style)),
-          Text(value, style: style),
-        ],
-      ),
-    );
-  }
-
   Widget _payments(BuildContext context, AppLocalizations t, Order order) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -396,15 +340,23 @@ class OrderDetailsScreen extends StatelessWidget {
             actionText: t.recordPayment,
             onAction: () => _recordPayment(context, t, order),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           ...order.payments.map(
             (p) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: 7),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_outline,
-                      size: 18, color: AppColors.success),
-                  const SizedBox(width: 8),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.13),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.check_rounded,
+                        size: 17, color: AppColors.success),
+                  ),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       '${p.method} • ${Fmt.shortDate(p.date)}',
@@ -416,7 +368,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   ),
                   Text(
                     Fmt.currency(p.amount),
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ],
               ),
@@ -428,13 +380,7 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _notes(BuildContext context, AppLocalizations t, Order order) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
+    return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -443,7 +389,7 @@ class OrderDetailsScreen extends StatelessWidget {
             actionText: t.saveLabel,
             onAction: () => _addNote(context, t, order),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           if (order.notes.isEmpty)
             Text(
               t.notesLabel,
@@ -452,17 +398,24 @@ class OrderDetailsScreen extends StatelessWidget {
           else
             ...order.notes.map(
               (n) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(vertical: 7),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.circle,
-                        size: 8, color: AppColors.accent),
-                    const SizedBox(width: 8),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 7),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         n.text,
-                        style: const TextStyle(fontSize: 13, height: 1.6),
+                        style: const TextStyle(fontSize: 13, height: 1.7),
                       ),
                     ),
                     Text(
@@ -557,6 +510,73 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 }
 
+/// Vertical status timeline.
+class _Timeline extends StatelessWidget {
+  const _Timeline({required this.current, required this.color});
+
+  final int current;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    const steps = OrderDetailsScreen._flow;
+    return Column(
+      children: [
+        for (int i = 0; i < steps.length; i++)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: i <= current ? color : AppColors.surfaceMuted,
+                      shape: BoxShape.circle,
+                      boxShadow: i == current
+                          ? AppColors.shadow(color: color, opacity: 0.4)
+                          : null,
+                    ),
+                    child: Icon(
+                      steps[i].icon,
+                      size: 15,
+                      color: i <= current
+                          ? Colors.white
+                          : AppColors.textMuted,
+                    ),
+                  ),
+                  if (i != steps.length - 1)
+                    Container(
+                      width: 2.5,
+                      height: 20,
+                      color: i < current ? color : AppColors.border,
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  steps[i].ku,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight:
+                        i == current ? FontWeight.w800 : FontWeight.w500,
+                    color: i <= current
+                        ? AppColors.textPrimary
+                        : AppColors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
 class _MeasureBox extends StatelessWidget {
   const _MeasureBox({required this.label, required this.value});
 
@@ -566,21 +586,18 @@ class _MeasureBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 96,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      width: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
         color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textMuted,
-            ),
+            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
           Row(
@@ -592,8 +609,9 @@ class _MeasureBox extends StatelessWidget {
                     ? value.toInt().toString()
                     : value.toString(),
                 style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                 ),
               ),
               const SizedBox(width: 3),

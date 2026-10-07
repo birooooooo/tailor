@@ -13,7 +13,7 @@ class AppTheme {
       primary: AppColors.primary,
       onPrimary: Colors.white,
       secondary: AppColors.accent,
-      onSecondary: AppColors.primaryDark,
+      onSecondary: Colors.white,
       surface: AppColors.surface,
       onSurface: AppColors.textPrimary,
       error: AppColors.error,
@@ -29,13 +29,14 @@ class AppTheme {
     return base.copyWith(
       appBarTheme: const AppBarTheme(
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         titleTextStyle: TextStyle(
           fontFamily: fontFamily,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 19,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
       ),
@@ -48,39 +49,52 @@ class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(AppColors.rMd),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceMuted,
+        fillColor: AppColors.surface,
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppColors.rSm),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppColors.rSm),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(AppColors.rSm),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size.fromHeight(54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppColors.rSm),
           ),
           textStyle: const TextStyle(
             fontFamily: fontFamily,
             fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.textPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppColors.rSm),
+          ),
+          side: const BorderSide(color: AppColors.border),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -89,17 +103,7 @@ class AppTheme {
         color: AppColors.border,
         thickness: 1,
       ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.accentSoft,
-        labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      splashFactory: InkSparkle.splashFactory,
     );
   }
 }

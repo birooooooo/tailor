@@ -6,7 +6,7 @@ import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 
-/// Row used in the orders list and on the dashboard.
+/// Card used in the orders list and on the dashboard.
 class OrderTile extends StatelessWidget {
   const OrderTile({super.key, required this.order, this.onTap});
 
@@ -16,78 +16,70 @@ class OrderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final initials = order.customer.name.characters.first;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.border),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SoftCard(
+        onTap: onTap,
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                gradient: AppColors.brand,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(Icons.checkroom_rounded,
+                  color: Colors.white70, size: 26),
             ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-                  child: Text(
-                    initials,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.customer.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: AppColors.primary,
                       fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      letterSpacing: -0.2,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        order.customer.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        '${t.orderLabel} #${order.id} • ${Fmt.shortDate(order.createdAt)}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 4),
+                  Text(
+                    '${t.orderLabel} #${order.id}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  StatusChip(order.status, compact: true),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  Fmt.currency(order.payable),
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    StatusChip(order.status, compact: true),
-                    const SizedBox(height: 6),
-                    Text(
-                      Fmt.currency(order.payable),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 10),
+                const Icon(Icons.chevron_left_rounded,
+                    color: AppColors.textMuted),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -63,8 +63,8 @@ class CustomersScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: AppColors.border),
+                            borderRadius: BorderRadius.circular(AppColors.rMd),
+                            boxShadow: AppColors.softShadow,
                           ),
                           child: Row(
                             children: [

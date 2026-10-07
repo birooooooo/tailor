@@ -33,17 +33,17 @@ class ReportsScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: StatCard(
-                    icon: Icons.payments_outlined,
+                  child: BentoTile(
+                    icon: Icons.payments_rounded,
                     label: t.statMonthlyIncome,
                     value: Fmt.currency(provider.monthlyIncome),
                     color: AppColors.success,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: StatCard(
-                    icon: Icons.pending_actions,
+                  child: BentoTile(
+                    icon: Icons.pending_actions_rounded,
                     label: t.statActiveOrders,
                     value: Fmt.number(provider.activeCount),
                     color: AppColors.info,
