@@ -5,7 +5,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/animations.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/orders_provider.dart';
+import '../../providers/shop_provider.dart';
 import '../../services/auth_service.dart';
+import '../../models/shop_profile.dart';
 import '../shop/shop_shell.dart';
 
 /// Login / register for a tailor shop. Works with Firebase Auth when
@@ -21,8 +23,10 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
   final _identifier = TextEditingController();
   final _password = TextEditingController();
   final _name = TextEditingController();
+  final _shopName = TextEditingController();
   final _phone = TextEditingController();
   final _email = TextEditingController();
+  final _address = TextEditingController();
 
   bool _isRegister = false;
   String? _error;
@@ -32,8 +36,10 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
     _identifier.dispose();
     _password.dispose();
     _name.dispose();
+    _shopName.dispose();
     _phone.dispose();
     _email.dispose();
+    _address.dispose();
     super.dispose();
   }
 
@@ -66,14 +72,18 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
 
     if (_isRegister) {
       if (_name.text.trim().isEmpty ||
+          _shopName.text.trim().isEmpty ||
           _phone.text.trim().isEmpty ||
           !_email.text.contains('@') ||
           _password.text.length < 6) {
         setState(
-          () => _error = 'ناو، مۆبایل، ئیمەیڵ و وشەی نهێنی (٦ پیت) پڕ بکەوە',
+          () => _error =
+              'ناو، ناوی دوکان، مۆبایل، ئیمەیڵ و وشەی نهێنی (٦ پیت) پڕ بکەوە',
         );
         return;
       }
+      final shop = context.read<ShopProvider>();
+      final orders = context.read<OrdersProvider>();
       try {
         await auth.register(
           name: _name.text,
@@ -85,6 +95,19 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
         setState(() => _error = _friendly(e));
         return;
       }
+
+      // A brand-new shop starts empty: fresh profile, no orders.
+      if (!mounted) return;
+      await shop.clear();
+      shop.update(
+        ShopProfile(
+          ownerName: _name.text.trim(),
+          shopName: _shopName.text.trim(),
+          phone: _phone.text.trim(),
+          address: _address.text.trim(),
+        ),
+      );
+      orders.clearAll();
     } else {
       if (_identifier.text.trim().isEmpty || _password.text.isEmpty) {
         setState(() => _error = 'ئیمەیڵ/مۆبایل/ناو و وشەی نهێنی پێویستە');
@@ -172,11 +195,18 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (_isRegister) ...[
-                  _label('ناوی تەواو'),
+                  _label('ناوی خاوەن'),
                   TextField(
                     controller: _name,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(hintText: 'ناوی تەواو'),
+                    decoration: const InputDecoration(hintText: 'ناوی خاوەن'),
+                  ),
+                  const SizedBox(height: 14),
+                  _label('ناوی دوکان'),
+                  TextField(
+                    controller: _shopName,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(hintText: 'ناوی دوکان'),
                   ),
                   const SizedBox(height: 14),
                   _label('ژمارەی مۆبایل'),
@@ -196,6 +226,15 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       hintText: 'shop@email.com',
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _label('ناونیشانی دوکان'),
+                  TextField(
+                    controller: _address,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      hintText: 'شار / گەرەک / شەقام',
                     ),
                   ),
                 ] else ...[
@@ -327,23 +366,27 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).maybePop(),
-                child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  child: const Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.white,
-                    size: 20,
+              // Only show a back button when there is something to go back to.
+              if (Navigator.of(context).canPop()) ...[
+                GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 18),
+                const SizedBox(height: 18),
+              ] else
+                const SizedBox(height: 4),
               const Appear(
                 child: Icon(
                   Icons.storefront_rounded,

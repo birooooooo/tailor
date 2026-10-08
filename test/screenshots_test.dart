@@ -148,6 +148,29 @@ void main() {
     );
   });
 
+  testWidgets('register screenshot', (tester) async {
+    _sizePhone(tester);
+    await _boot(tester);
+    await tester.tap(find.text('هەژمارت نییە؟ دروستی بکە'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/09_register.png'),
+    );
+  });
+
+  testWidgets('settings screenshot', (tester) async {
+    _sizePhone(tester);
+    await _boot(tester);
+    await _enterShop(tester);
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/10_settings.png'),
+    );
+  });
+
   testWidgets('dark mode dashboard', (tester) async {
     _sizePhone(tester);
     await _boot(tester);

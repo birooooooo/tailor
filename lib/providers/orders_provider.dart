@@ -110,6 +110,13 @@ class OrdersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Wipes every order (used when a brand-new shop signs up).
+  void clearAll() {
+    _orders = const [];
+    _persist();
+    notifyListeners();
+  }
+
   void updateStatus(String id, OrderStatus status) {
     final i = _indexOf(id);
     if (i == -1) return;
