@@ -41,6 +41,12 @@ class OrdersProvider extends ChangeNotifier {
 
   int get activeCount => activeOrders.length;
 
+  /// Orders waiting for the shop to accept them.
+  List<Order> get pendingOrders =>
+      _orders.where((o) => o.status == OrderStatus.pending).toList();
+
+  int get pendingCount => pendingOrders.length;
+
   /// Income collected in the current month.
   int get monthlyIncome {
     final now = DateTime.now();

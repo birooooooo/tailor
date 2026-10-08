@@ -13,6 +13,7 @@ import '../../../providers/orders_provider.dart';
 import '../settings/shop_settings_screen.dart';
 import '../orders/order_details_screen.dart';
 import '../orders/order_tile.dart';
+import '../orders/requests_screen.dart';
 
 /// Shop home: an immersive gradient header + colourful bento tiles.
 class DashboardScreen extends StatelessWidget {
@@ -66,6 +67,13 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
+                if (provider.pendingCount > 0) ...[
+                  Appear(
+                    delay: 130,
+                    child: _requestsCard(context, provider.pendingCount),
+                  ),
+                  const SizedBox(height: 20),
+                ],
                 Appear(
                   delay: 200,
                   child: SectionHeader(
@@ -108,6 +116,79 @@ class DashboardScreen extends StatelessWidget {
   void _openSettings(BuildContext context) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => const ShopSettingsScreen()));
+  }
+
+  Widget _requestsCard(BuildContext context, int count) {
+    return Bouncy(
+      onTap: () =>
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const RequestsScreen())),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.accent,
+              AppColors.accent.withValues(alpha: 0.78),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(AppColors.rMd),
+          boxShadow: AppColors.shadow(color: AppColors.accent, opacity: 0.32),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.30),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(Icons.inbox_rounded, color: Color(0xFF1A1F1B)),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'داواکاری نوێ',
+                    style: TextStyle(
+                      color: Color(0xFF1A1F1B),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'چاوەڕوانی پەسەندکردن',
+                    style: TextStyle(color: Color(0xFF3A3A2A), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A1F1B),
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                '$count',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Icon(Icons.chevron_left_rounded, color: Color(0xFF1A1F1B)),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _announcement(AppLocalizations t) {

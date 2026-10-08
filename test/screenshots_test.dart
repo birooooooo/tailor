@@ -105,6 +105,23 @@ void main() {
     );
   });
 
+  testWidgets('incoming requests screenshot', (tester) async {
+    _sizePhone(tester);
+    await tester.pumpWidget(const TailorApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('دوکانی دروین'));
+    await tester.pumpAndSettle();
+
+    // Tap the gold "new requests" card on the dashboard.
+    await tester.tap(find.text('داواکاری نوێ'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/07_requests.png'),
+    );
+  });
+
   testWidgets('dark mode dashboard', (tester) async {
     _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
