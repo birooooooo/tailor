@@ -8,9 +8,14 @@ import 'features/auth/role_select_screen.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'providers/orders_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/firebase_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Start Firebase if it is configured; otherwise the app runs offline.
+  await FirebaseService.init();
+
   runApp(const TailorApp());
 }
 

@@ -1,17 +1,38 @@
 import 'package:flutter/foundation.dart';
 
 import '../core/constants/app_constants.dart';
-import '../data/sample_data.dart';
+import '../data/order_repository.dart';
 import '../models/order.dart';
 
 /// Holds the shop's orders and customers.
 ///
-/// Right now it is backed by in-memory sample data. Later this class will talk
-/// to Firestore instead — the screens will not need to change.
+/// It talks to an [OrderRepository] — either the offline local store or
+/// Firestore — so the screens never care where the data lives.
 class OrdersProvider extends ChangeNotifier {
-  OrdersProvider() : _orders = SampleData.orders();
+  OrdersProvider([OrderRepository? repository])
+    : _repo = repository ?? RepositoryFactory.create() {
+    _load();
+  }
 
-  final List<Order> _orders;
+  final OrderRepository _repo;
+
+  List<Order> _orders = const [];
+  bool _loading = true;
+
+  bool get isLoading => _loading;
+  String get shopId => _repo.shopId;
+
+  Future<void> _load() async {
+    _orders = await _repo.load();
+    _loading = false;
+    notifyListeners();
+  }
+
+  /// Fire-and-forget save. Firestore queues writes while offline and syncs
+  /// them when the connection returns.
+  void _persist() {
+    _repo.save(_orders);
+  }
 
   List<Order> get orders => List.unmodifiable(_orders);
 
@@ -68,14 +89,16 @@ class OrdersProvider extends ChangeNotifier {
   }
 
   void addOrder(Order order) {
-    _orders.insert(0, order);
+    _orders = [order, ..._orders];
+    _persist();
     notifyListeners();
   }
 
   void updateStatus(String id, OrderStatus status) {
     final i = _indexOf(id);
     if (i == -1) return;
-    _orders[i] = _orders[i].copyWith(status: status);
+    _orders = [..._orders]..[i] = _orders[i].copyWith(status: status);
+    _persist();
     notifyListeners();
   }
 
@@ -92,12 +115,14 @@ class OrdersProvider extends ChangeNotifier {
     final i = _indexOf(id);
     if (i == -1) return;
     final order = _orders[i];
-    _orders[i] = order.copyWith(
-      payments: [
-        ...order.payments,
-        Payment(amount: amount, date: DateTime.now()),
-      ],
-    );
+    _orders = [..._orders]
+      ..[i] = order.copyWith(
+        payments: [
+          ...order.payments,
+          Payment(amount: amount, date: DateTime.now()),
+        ],
+      );
+    _persist();
     notifyListeners();
   }
 
@@ -105,12 +130,14 @@ class OrdersProvider extends ChangeNotifier {
     final i = _indexOf(id);
     if (i == -1) return;
     final order = _orders[i];
-    _orders[i] = order.copyWith(
-      notes: [
-        ...order.notes,
-        OrderNote(text: text, date: DateTime.now()),
-      ],
-    );
+    _orders = [..._orders]
+      ..[i] = order.copyWith(
+        notes: [
+          ...order.notes,
+          OrderNote(text: text, date: DateTime.now()),
+        ],
+      );
+    _persist();
     notifyListeners();
   }
 

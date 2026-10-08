@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tailor_app/main.dart';
 import 'package:tailor_app/providers/theme_provider.dart';
@@ -42,6 +43,11 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     await _loadFonts();
+  });
+
+  setUp(() {
+    // The local repository uses SharedPreferences; give it a mock store.
+    SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('shop screenshots', (tester) async {

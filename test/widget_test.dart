@@ -1,8 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tailor_app/main.dart';
 
 void main() {
+  setUp(() {
+    // The local repository uses SharedPreferences; give it a mock store.
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('Role select screen renders in Kurdish', (tester) async {
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
