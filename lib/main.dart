@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/localization/ku_fallback_localizations.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/role_select_screen.dart';
+import 'features/auth/splash_screen.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'providers/orders_provider.dart';
 import 'providers/theme_provider.dart';
@@ -72,7 +72,7 @@ class _App extends StatelessWidget {
             textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             child: child ?? const SizedBox.shrink(),
           ),
-          home: const RoleSelectScreen(),
+          home: const SplashScreen(),
         );
       },
     );

@@ -9,7 +9,7 @@ import '../../services/auth_service.dart';
 import '../shop/shop_shell.dart';
 
 /// Login / register for a tailor shop. Works with Firebase Auth when
-/// configured, otherwise with a local (offline) account.
+/// configured, otherwise with local accounts (offline).
 class ShopLoginScreen extends StatefulWidget {
   const ShopLoginScreen({super.key});
 
@@ -18,40 +18,84 @@ class ShopLoginScreen extends StatefulWidget {
 }
 
 class _ShopLoginScreenState extends State<ShopLoginScreen> {
-  final _email = TextEditingController();
+  final _identifier = TextEditingController();
   final _password = TextEditingController();
-  final _shopName = TextEditingController();
+  final _name = TextEditingController();
+  final _phone = TextEditingController();
+  final _email = TextEditingController();
 
   bool _isRegister = false;
   String? _error;
 
   @override
   void dispose() {
-    _email.dispose();
+    _identifier.dispose();
     _password.dispose();
-    _shopName.dispose();
+    _name.dispose();
+    _phone.dispose();
+    _email.dispose();
     super.dispose();
   }
 
+  String _friendly(Object e) {
+    final code = e is AuthException ? e.code : e.toString();
+    switch (code) {
+      case 'user-not-found':
+        return 'هیچ هەژمارێک بەم زانیارییە نەدۆزرایەوە';
+      case 'wrong-password':
+        return 'وشەی نهێنی هەڵەیە';
+      case 'email-already-in-use':
+        return 'ئەم ئیمەیڵ یان ژمارە بەکارهاتووە';
+      case 'invalid-email':
+        return 'ئیمەیڵەکە دروست نییە';
+      case 'weak-password':
+        return 'وشەی نهێنی زۆر لاوازە (٦ پیت بە کەمترین)';
+      case 'network-request-failed':
+      case 'network':
+        return 'پەیوەندی بە ئینتەرنێت نییە';
+      default:
+        return 'هەڵەیەک ڕوویدا، دووبارە هەوڵ بدەوە';
+    }
+  }
+
   Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
     final auth = context.read<AuthService>();
     final orders = context.read<OrdersProvider>();
     setState(() => _error = null);
 
-    if (_email.text.trim().isEmpty || _password.text.length < 6) {
-      setState(() => _error = 'ئیمەیڵ و وشەی نهێنی (٦ پیت) پێویستە');
-      return;
-    }
-
-    try {
-      if (_isRegister) {
-        await auth.register(_email.text, _password.text, _shopName.text);
-      } else {
-        await auth.signIn(_email.text, _password.text);
+    if (_isRegister) {
+      if (_name.text.trim().isEmpty ||
+          _phone.text.trim().isEmpty ||
+          !_email.text.contains('@') ||
+          _password.text.length < 6) {
+        setState(
+          () => _error = 'ناو، مۆبایل، ئیمەیڵ و وشەی نهێنی (٦ پیت) پڕ بکەوە',
+        );
+        return;
       }
-    } catch (e) {
-      setState(() => _error = _friendly(e));
-      return;
+      try {
+        await auth.register(
+          name: _name.text,
+          phone: _phone.text,
+          email: _email.text,
+          password: _password.text,
+        );
+      } catch (e) {
+        setState(() => _error = _friendly(e));
+        return;
+      }
+    } else {
+      if (_identifier.text.trim().isEmpty || _password.text.isEmpty) {
+        setState(() => _error = 'ئیمەیڵ/مۆبایل/ناو و وشەی نهێنی پێویستە');
+        return;
+      }
+      try {
+        await auth.signInByIdentifier(_identifier.text, _password.text);
+      } catch (e) {
+        setState(() => _error = _friendly(e));
+        return;
+      }
     }
 
     if (!mounted) return;
@@ -70,14 +114,45 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
         .pushReplacement(MaterialPageRoute(builder: (_) => const ShopShell()));
   }
 
-  String _friendly(Object e) {
-    final s = e.toString();
-    if (s.contains('user-not-found')) return 'هیچ هەژمارێک بەم ئیمەیڵە نییە';
-    if (s.contains('wrong-password')) return 'وشەی نهێنی هەڵەیە';
-    if (s.contains('email-already-in-use')) return 'ئەم ئیمەیڵە بەکارهاتووە';
-    if (s.contains('invalid-email')) return 'ئیمەیڵەکە دروست نییە';
-    if (s.contains('network')) return 'پەیوەندی بە ئینتەرنێت نییە';
-    return 'هەڵەیەک ڕوویدا، دووبارە هەوڵ بدەوە';
+  Future<void> _forgot() async {
+    final controller = TextEditingController(text: _identifier.text);
+    final auth = context.read<AuthService>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    final id = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('وشەی نهێنی لەبیرچووە'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'ئیمەیڵ یان ژمارەی مۆبایل',
+            labelText: 'هەژمارەکەت',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('پاشگەزبوونەوە'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('ناردن'),
+          ),
+        ],
+      ),
+    );
+
+    if (id == null || id.isEmpty) return;
+    try {
+      await auth.resetPassword(id);
+      messenger.showSnackBar(
+        const SnackBar(content: Text('بەستەری گۆڕینی وشەی نهێنی نێردرا')),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(_friendly(e))));
+    }
   }
 
   @override
@@ -96,29 +171,70 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _label('ئیمەیڵ'),
-                TextField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: 'shop@email.com'),
-                ),
+                if (_isRegister) ...[
+                  _label('ناوی تەواو'),
+                  TextField(
+                    controller: _name,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(hintText: 'ناوی تەواو'),
+                  ),
+                  const SizedBox(height: 14),
+                  _label('ژمارەی مۆبایل'),
+                  TextField(
+                    controller: _phone,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      hintText: '0770 000 0000',
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _label('ئیمەیڵ'),
+                  TextField(
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      hintText: 'shop@email.com',
+                    ),
+                  ),
+                ] else ...[
+                  _label('ئیمەیڵ، مۆبایل، یان ناو'),
+                  TextField(
+                    controller: _identifier,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      hintText: 'shop@email.com / 0770… / ناوت',
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 _label('وشەی نهێنی'),
                 TextField(
                   controller: _password,
                   obscureText: true,
+                  onSubmitted: (_) => _submit(),
                   decoration: const InputDecoration(hintText: '••••••'),
                 ),
-                if (_isRegister) ...[
-                  const SizedBox(height: 14),
-                  _label('ناوی دوکان'),
-                  TextField(
-                    controller: _shopName,
-                    decoration: const InputDecoration(hintText: 'ناوی دوکان'),
+                if (!_isRegister) ...[
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: _forgot,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 36),
+                      ),
+                      child: Text(
+                        'وشەی نهێنیت لەبیرچووە؟',
+                        style: TextStyle(color: AppColors.primary),
+                      ),
+                    ),
                   ),
                 ],
                 if (_error != null) ...[
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -146,7 +262,7 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
                     ),
                   ),
                 ],
-                const SizedBox(height: 22),
+                const SizedBox(height: 20),
                 FilledButton(
                   onPressed: auth.isLoading ? null : _submit,
                   child: auth.isLoading
@@ -162,9 +278,12 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
                           _isRegister ? 'دروستکردنی هەژمار' : 'چوونەژوورەوە',
                         ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 TextButton(
-                  onPressed: () => setState(() => _isRegister = !_isRegister),
+                  onPressed: () => setState(() {
+                    _isRegister = !_isRegister;
+                    _error = null;
+                  }),
                   child: Text(
                     _isRegister
                         ? 'هەژمارت هەیە؟ بچۆ ژوورەوە'
@@ -173,7 +292,6 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
                   ),
                 ),
                 if (auth.supportsGuest) ...[
-                  const SizedBox(height: 4),
                   const Divider(height: 26),
                   OutlinedButton.icon(
                     onPressed: _guest,
@@ -205,36 +323,37 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 34),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: () => Navigator.of(context).maybePop(),
                 child: Container(
-                  width: 44,
-                  height: 44,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(13),
                   ),
                   child: const Icon(
                     Icons.arrow_forward_rounded,
                     color: Colors.white,
+                    size: 20,
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 18),
               const Appear(
                 child: Icon(
                   Icons.storefront_rounded,
                   color: Colors.white,
-                  size: 44,
+                  size: 40,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
-                t.shopOwner,
+                _isRegister ? 'دروستکردنی هەژمار' : t.shopOwner,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -242,9 +361,11 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'چوونەژوورەوە بۆ بەڕێوەبردنی دوکان',
-                style: TextStyle(color: Colors.white70, fontSize: 13),
+              Text(
+                _isRegister
+                    ? 'بەخێربێی! زانیارییەکان پڕ بکەوە'
+                    : 'چوونەژوورەوە بۆ بەڕێوەبردنی دوکان',
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
             ],
           ),

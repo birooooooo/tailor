@@ -41,11 +41,12 @@ class ShopSettingsScreen extends StatelessWidget {
 
   Widget _accountTile(BuildContext context, AuthService auth) {
     final u = auth.user;
-    final name = (u?.shopName.isNotEmpty ?? false)
-        ? u!.shopName
-        : (u?.email.isNotEmpty ?? false)
+    final name = u?.displayName ?? 'میوان';
+    final sub = (u?.email.isNotEmpty ?? false)
         ? u!.email
-        : 'میوان';
+        : (u?.phone.isNotEmpty ?? false)
+        ? u!.phone
+        : 'حەسابی ناوخۆیی';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -81,7 +82,7 @@ class ShopSettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  (u?.email.isNotEmpty ?? false) ? u!.email : 'حەسابی ناوخۆیی',
+                  sub,
                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
