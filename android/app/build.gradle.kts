@@ -1,3 +1,16 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Pulled in only when the Firebase config file is present.
+        if (file("google-services.json").exists()) {
+            classpath("com.google.gms:google-services:4.4.2")
+        }
+    }
+}
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -46,4 +59,9 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// Enable Firebase automatically as soon as google-services.json is added.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
 }

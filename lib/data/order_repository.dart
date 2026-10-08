@@ -107,10 +107,10 @@ class RepositoryFactory {
   RepositoryFactory._();
 
   /// Firestore when Firebase is configured, otherwise the offline store.
-  static OrderRepository create() {
+  static OrderRepository create({String shopId = 'shop1'}) {
     try {
       if (FirebaseServiceAvailable.value) {
-        return FirestoreOrderRepository('shop1');
+        return FirestoreOrderRepository(shopId);
       }
     } catch (_) {
       // Ignore and fall back to local.

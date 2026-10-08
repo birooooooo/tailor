@@ -40,19 +40,11 @@ android/app/google-services.json
 1. Add an **iOS app**, bundle id from `ios/Runner.xcodeproj`.
 2. Download `GoogleService-Info.plist` → put it in `ios/Runner/`.
 
-### 4. Let me add the Gradle plugin
-The build needs the Google Services Gradle plugin. Tell me when
-`google-services.json` is in place and I'll add it (2 lines), or add it yourself:
-
-`android/settings.gradle.kts` (in the `plugins {}` block):
-```kotlin
-id("com.google.gms.google-services") version "4.4.2" apply false
-```
-
-`android/app/build.gradle.kts` (in the `plugins {}` block):
-```kotlin
-id("com.google.gms.google-services")
-```
+### 4. That's it — the Gradle plugin is automatic
+The Android build applies the Google Services plugin **only if
+`android/app/google-services.json` exists** (see `android/app/build.gradle.kts`).
+So the app builds normally without the file, and switches to Firebase the
+moment you add it — nothing else to edit.
 
 ### 5. Create the Firestore database
 Firebase console → **Build → Firestore Database → Create database**

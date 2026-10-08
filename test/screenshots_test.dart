@@ -39,6 +39,21 @@ void _sizePhone(WidgetTester tester) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
+/// Taps the shop role card and, if the login screen shows up, continues
+/// without an account.
+Future<void> _enterShop(WidgetTester tester) async {
+  await tester.tap(find.text('دوکانی دروین'));
+  await tester.pumpAndSettle();
+
+  final guest = find.text('بەردەوامبوون بێ هەژمار');
+  if (guest.evaluate().isNotEmpty) {
+    await tester.ensureVisible(guest);
+    await tester.pumpAndSettle();
+    await tester.tap(guest);
+    await tester.pumpAndSettle();
+  }
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -56,8 +71,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Enter the shop side.
-    await tester.tap(find.text('دوکانی دروین'));
-    await tester.pumpAndSettle();
+    await _enterShop(tester);
 
     await expectLater(
       find.byType(TailorApp),
@@ -85,10 +99,9 @@ void main() {
     _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('دوکانی دروین'));
-    await tester.pumpAndSettle();
+    await _enterShop(tester);
 
-    // The centre "+" opens the new-order screen directly.
+    // Tap the centre "+" -> opens the new-order screen directly.
     await tester.tap(find.byIcon(Icons.add_rounded));
     await tester.pumpAndSettle();
     await expectLater(
@@ -109,8 +122,7 @@ void main() {
     _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('دوکانی دروین'));
-    await tester.pumpAndSettle();
+    await _enterShop(tester);
 
     // Tap the gold "new requests" card on the dashboard.
     await tester.tap(find.text('داواکاری نوێ'));
@@ -122,15 +134,27 @@ void main() {
     );
   });
 
+  testWidgets('shop login screenshot', (tester) async {
+    _sizePhone(tester);
+    await tester.pumpWidget(const TailorApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('دوکانی دروین'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(TailorApp),
+      matchesGoldenFile('goldens/08_shop_login.png'),
+    );
+  });
+
   testWidgets('dark mode dashboard', (tester) async {
     _sizePhone(tester);
     await tester.pumpWidget(const TailorApp());
     await tester.pumpAndSettle();
 
     // Go to the shop while still light.
-    await tester.tap(find.text('دوکانی دروین'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 700));
+    await _enterShop(tester);
 
     // Toggle dark mode.
     final ctx = tester.element(find.byType(MaterialApp));

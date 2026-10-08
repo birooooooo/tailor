@@ -8,6 +8,7 @@ import 'features/auth/role_select_screen.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'providers/orders_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/auth_service.dart';
 import 'services/firebase_service.dart';
 
 void main() async {
@@ -28,6 +29,9 @@ class TailorApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()..load()),
+        ChangeNotifierProvider(
+          create: (_) => AuthServiceFactory.create()..init(),
+        ),
         ChangeNotifierProvider(create: (_) => OrdersProvider()),
       ],
       child: const _App(),

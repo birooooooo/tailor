@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../providers/orders_provider.dart';
+import '../../services/auth_service.dart';
 import '../shop/shop_shell.dart';
+import 'shop_login_screen.dart';
 
 /// Entry choice: are you a customer or a tailor shop?
 /// Placeholder layout — will be refined once the Stitch design is reviewed.
@@ -57,8 +61,7 @@ class RoleSelectScreen extends StatelessWidget {
                 icon: Icons.storefront_outlined,
                 title: t.shopOwner,
                 color: AppColors.accent,
-                onTap: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const ShopShell())),
+                onTap: () => _openShop(context),
               ),
               const SizedBox(height: 32),
             ],
@@ -72,6 +75,18 @@ class RoleSelectScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(t.comingSoon)));
+  }
+
+  void _openShop(BuildContext context) {
+    final auth = context.read<AuthService>();
+    if (auth.isLoggedIn) {
+      context.read<OrdersProvider>().useShop(auth.user?.id ?? 'shop1');
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const ShopShell()));
+    } else {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const ShopLoginScreen()));
+    }
   }
 }
 

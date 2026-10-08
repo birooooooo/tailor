@@ -14,7 +14,17 @@ class OrdersProvider extends ChangeNotifier {
     _load();
   }
 
-  final OrderRepository _repo;
+  OrderRepository _repo;
+
+  /// Switches the data source to the given shop (called after login).
+  void useShop(String shopId) {
+    if (!FirebaseServiceAvailable.value || _repo.shopId == shopId) return;
+    _repo = FirestoreOrderRepository(shopId);
+    _loading = true;
+    _orders = const [];
+    notifyListeners();
+    _load();
+  }
 
   List<Order> _orders = const [];
   bool _loading = true;
