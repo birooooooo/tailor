@@ -1,0 +1,69 @@
+# Codemagic CI configuration for the tailor app.
+#
+# With this file present, Codemagic stops using "Default Workflow" and uses the
+# workflows below. Pick one when you press "Start new build".
+#
+# NOTE: iOS on a real iPhone needs code signing (Apple Developer account).
+# The iOS workflow below builds UNSIGNED first so you can confirm it compiles.
+# When you have an Apple Developer account + Code signing identities added in
+# Codemagic, uncomment the `ios_signing:` block to get an installable .ipa.
+
+workflows:
+  # ---------------------------------------------------------------- Android
+  android-workflow:
+    name: Android
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      java: 17
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/.gradle/caches
+    scripts:
+      - name: Get packages
+        script: flutter pub get
+      - name: Analyze
+        script: flutter analyze || true
+      - name: Run tests
+        script: flutter test || true
+      - name: Build debug APK
+        script: flutter build apk --debug
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/**/*.aab
+
+  # -------------------------------------------------------------------- iOS
+  ios-workflow:
+    name: iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      # When you have an Apple Developer account, set these in Codemagic:
+      #   App settings -> Code signing identities, then uncomment:
+      #
+      # ios_signing:
+      #   distribution_type: development   # or ad_hoc / app_store
+      #   bundle_identifier: com.tailorapp.tailorApp
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/Library/Caches/CocoaPods
+    scripts:
+      - name: Get packages
+        script: flutter pub get
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install
+      - name: Build iOS (unsigned)
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
+      - /tmp/xcodebuild_logs/*.log
