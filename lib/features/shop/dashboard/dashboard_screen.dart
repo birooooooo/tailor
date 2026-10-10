@@ -193,7 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.white.withValues(alpha: 0.30),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(Icons.inbox_rounded, color: Color(0xFF001D39)),
+              child: const Icon(Icons.inbox_rounded, color: Color(0xFF1A1F1B)),
             ),
             const SizedBox(width: 12),
             const Expanded(
@@ -203,7 +203,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     'داواکاری نوێ',
                     style: TextStyle(
-                      color: Color(0xFF001D39),
+                      color: Color(0xFF1A1F1B),
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                     ),
@@ -211,7 +211,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   SizedBox(height: 3),
                   Text(
                     'چاوەڕوانی پەسەندکردن',
-                    style: TextStyle(color: Color(0xFF0A4174), fontSize: 12),
+                    style: TextStyle(color: Color(0xFF3A3A2A), fontSize: 12),
                   ),
                 ],
               ),
@@ -219,7 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
               decoration: const BoxDecoration(
-                color: Color(0xFF001D39),
+                color: Color(0xFF1A1F1B),
                 shape: BoxShape.circle,
               ),
               child: Text(
@@ -231,7 +231,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
             const SizedBox(width: 6),
-            const Icon(Icons.chevron_left_rounded, color: Color(0xFF001D39)),
+            const Icon(Icons.chevron_left_rounded, color: Color(0xFF1A1F1B)),
           ],
         ),
       ),

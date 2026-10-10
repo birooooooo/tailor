@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// A full colour set. Two of them exist: [AppPalette.light] and
 /// [AppPalette.dark]. The app swaps the active one when the theme changes.
 ///
-/// Brand blues: Navy `#001D39`, Deep Blue `#0A4174`, Blue `#49769F`,
-/// Teal `#4E8EA2`, Muted Teal `#6EA2B3`, Sky `#7BBDE8`, Pale `#BDD8E9`.
+/// Brand: Emerald `#0F5B4C` (main), Forest Green `#1E4738`,
+/// Cream `#F5F0E6`, Warm Sand `#D9CDBA`, Gold `#C9A84C`.
 class AppPalette {
   const AppPalette({
     required this.brightness,
@@ -66,59 +66,59 @@ class AppPalette {
 
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
-    primary: Color(0xFF0A4174), // Deep Blue
-    primaryDark: Color(0xFF001D39), // Navy
-    accent: Color(0xFF7BBDE8), // Sky
-    accentSoft: Color(0xFFBDD8E9), // Pale blue
-    lime: Color(0xFF6EA2B3), // Muted Teal
-    background: Color(0xFFF2F7FB), // Ice
+    primary: Color(0xFF0F5B4C), // Emerald
+    primaryDark: Color(0xFF1E4738), // Forest Green
+    accent: Color(0xFFC9A84C), // Gold
+    accentSoft: Color(0xFFE7DCC5), // Sand tint
+    lime: Color(0xFFC9A84C), // Gold
+    background: Color(0xFFF5F0E6), // Cream
     surface: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFDCE9F2),
-    border: Color(0xFFC6D9E8),
-    textPrimary: Color(0xFF001D39), // Navy
-    textSecondary: Color(0xFF49769F),
-    textMuted: Color(0xFF7A93A6),
+    surfaceMuted: Color(0xFFEFE8D9), // Warm Sand tint
+    border: Color(0xFFE3D9C6),
+    textPrimary: Color(0xFF1A1F1B),
+    textSecondary: Color(0xFF5A655D),
+    textMuted: Color(0xFF8A9188),
     success: Color(0xFF1E7A54),
     warning: Color(0xFFC08A2E),
     error: Color(0xFFB3402F),
-    info: Color(0xFF49769F),
+    info: Color(0xFF2F6F8F),
     stagePending: Color(0xFFC08A2E),
-    stageAccepted: Color(0xFF49769F),
-    stageProducing: Color(0xFF0A4174),
-    stageTrial: Color(0xFF6EA2B3),
+    stageAccepted: Color(0xFF2F6F8F),
+    stageProducing: Color(0xFF0F5B4C),
+    stageTrial: Color(0xFFC9A84C),
     stageReady: Color(0xFF1E7A54),
-    stageDelivered: Color(0xFF6E7A85),
+    stageDelivered: Color(0xFF6E6A60),
     stageCancelled: Color(0xFFB3402F),
-    brandGradient: [Color(0xFF49769F), Color(0xFF0A4174), Color(0xFF001D39)],
-    shadowBase: Color(0xFF0A4174),
+    brandGradient: [Color(0xFF1E7A5F), Color(0xFF0F5B4C), Color(0xFF1E4738)],
+    shadowBase: Color(0xFF0F5B4C),
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    primary: Color(0xFF7BBDE8), // Sky (bright for dark)
-    primaryDark: Color(0xFF0A4174),
-    accent: Color(0xFF6EA2B3), // Muted Teal
-    accentSoft: Color(0xFF16324A),
-    lime: Color(0xFF7BBDE8),
-    background: Color(0xFF07182A), // Deep navy-black
-    surface: Color(0xFF0E2A44),
-    surfaceMuted: Color(0xFF163A5A),
-    border: Color(0xFF1F4A6E),
-    textPrimary: Color(0xFFE6F0F8),
-    textSecondary: Color(0xFFA9C4D8),
-    textMuted: Color(0xFF7C97AC),
+    primary: Color(0xFF2E9E7C), // Emerald (brighter for dark)
+    primaryDark: Color(0xFF14634F),
+    accent: Color(0xFFD9B85C), // Gold
+    accentSoft: Color(0xFF1E3A31),
+    lime: Color(0xFFC9A84C),
+    background: Color(0xFF0A1512), // Deep forest-black
+    surface: Color(0xFF13231D),
+    surfaceMuted: Color(0xFF1B3028),
+    border: Color(0xFF254237),
+    textPrimary: Color(0xFFF5F0E6), // Cream
+    textSecondary: Color(0xFFC7BFAE), // Warm Sand
+    textMuted: Color(0xFF8FA096),
     success: Color(0xFF3DBB84),
     warning: Color(0xFFE0A93C),
     error: Color(0xFFE8735F),
-    info: Color(0xFF7BBDE8),
+    info: Color(0xFF5FA8C9),
     stagePending: Color(0xFFE0A93C),
-    stageAccepted: Color(0xFF7BBDE8),
-    stageProducing: Color(0xFF4E8EA2),
-    stageTrial: Color(0xFF6EA2B3),
+    stageAccepted: Color(0xFF5FA8C9),
+    stageProducing: Color(0xFF2E9E7C),
+    stageTrial: Color(0xFFD9B85C),
     stageReady: Color(0xFF3DBB84),
-    stageDelivered: Color(0xFF9AA9B6),
+    stageDelivered: Color(0xFF9AA39C),
     stageCancelled: Color(0xFFE8735F),
-    brandGradient: [Color(0xFF49769F), Color(0xFF0A4174), Color(0xFF001D39)],
+    brandGradient: [Color(0xFF2E9E7C), Color(0xFF14634F), Color(0xFF0F4738)],
     shadowBase: Color(0xFF000000),
   );
 }
