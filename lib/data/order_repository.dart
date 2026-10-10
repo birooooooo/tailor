@@ -38,10 +38,14 @@ class LocalOrderRepository implements OrderRepository {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_key);
       if (raw == null) {
-        // First run: seed with the sample shop so the app is not empty.
-        final seed = SampleData.orders();
-        await save(seed);
-        return seed;
+        // Debug builds get sample data so the app is not empty while
+        // developing. Release builds start empty for real shops.
+        if (kDebugMode) {
+          final seed = SampleData.orders();
+          await save(seed);
+          return seed;
+        }
+        return const [];
       }
       final decoded = jsonDecode(raw) as List;
       return decoded
@@ -49,7 +53,7 @@ class LocalOrderRepository implements OrderRepository {
           .toList();
     } catch (e) {
       debugPrint('Local load failed, using sample data: $e');
-      return SampleData.orders();
+      return kDebugMode ? SampleData.orders() : const [];
     }
   }
 
@@ -84,9 +88,12 @@ class FirestoreOrderRepository implements OrderRepository {
     // Firestore serves this from its local cache when offline.
     final snap = await _orders.get();
     if (snap.docs.isEmpty) {
-      final seed = SampleData.orders();
-      await save(seed);
-      return seed;
+      if (kDebugMode) {
+        final seed = SampleData.orders();
+        await save(seed);
+        return seed;
+      }
+      return const [];
     }
     return snap.docs.map((d) => Order.fromJson(d.data())).toList();
   }

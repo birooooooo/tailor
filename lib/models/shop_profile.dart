@@ -44,6 +44,13 @@ class ShopProfile {
   final List<ServiceItem> services;
   final List<String> measurementFields;
 
+  /// The styles the shop offers (editable in settings).
+  final List<String> styles;
+
+  /// Subscription state ('' = none, otherwise a plan id such as 'monthly').
+  final String subscriptionPlan;
+  final DateTime? subscribedUntil;
+
   const ShopProfile({
     this.ownerName = '',
     this.shopName = '',
@@ -55,11 +62,20 @@ class ShopProfile {
     this.staff = const [],
     this.services = const [],
     this.measurementFields = const [],
+    this.styles = const [],
+    this.subscriptionPlan = '',
+    this.subscribedUntil,
   });
 
   static const ShopProfile empty = ShopProfile();
 
   bool get hasLocation => lat != null && lng != null;
+
+  /// Whether the shop currently has an active subscription.
+  bool get hasActiveSubscription =>
+      subscriptionPlan.isNotEmpty &&
+      subscribedUntil != null &&
+      subscribedUntil!.isAfter(DateTime.now());
 
   /// A link that opens the shop in Google Maps.
   String get mapsUrl {
@@ -78,6 +94,9 @@ class ShopProfile {
     List<StaffMember>? staff,
     List<ServiceItem>? services,
     List<String>? measurementFields,
+    List<String>? styles,
+    String? subscriptionPlan,
+    DateTime? subscribedUntil,
   }) {
     return ShopProfile(
       ownerName: ownerName ?? this.ownerName,
@@ -90,6 +109,9 @@ class ShopProfile {
       staff: staff ?? this.staff,
       services: services ?? this.services,
       measurementFields: measurementFields ?? this.measurementFields,
+      styles: styles ?? this.styles,
+      subscriptionPlan: subscriptionPlan ?? this.subscriptionPlan,
+      subscribedUntil: subscribedUntil ?? this.subscribedUntil,
     );
   }
 
@@ -104,6 +126,9 @@ class ShopProfile {
     'staff': staff.map((s) => s.toJson()).toList(),
     'services': services.map((s) => s.toJson()).toList(),
     'measurementFields': measurementFields,
+    'styles': styles,
+    'subscriptionPlan': subscriptionPlan,
+    'subscribedUntil': subscribedUntil?.toIso8601String(),
   };
 
   factory ShopProfile.fromJson(Map<String, dynamic> j) => ShopProfile(
@@ -122,5 +147,8 @@ class ShopProfile {
         .toList(),
     measurementFields: ((j['measurementFields'] as List?) ?? const [])
         .cast<String>(),
+    styles: ((j['styles'] as List?) ?? const []).cast<String>(),
+    subscriptionPlan: j['subscriptionPlan'] as String? ?? '',
+    subscribedUntil: DateTime.tryParse(j['subscribedUntil'] as String? ?? ''),
   );
 }

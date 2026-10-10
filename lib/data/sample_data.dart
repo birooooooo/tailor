@@ -158,7 +158,7 @@ class SampleData {
             measurements: const [upper],
           ),
         ],
-        payments: [Payment(amount: 140000, date: ago(4))],
+        payments: [Payment(amount: 100000, date: ago(4))],
       ),
     ];
   }

@@ -4,14 +4,19 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/contact.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_widgets.dart';
 import '../../../core/widgets/effects.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 import '../../../providers/orders_provider.dart';
+import 'deliver_dialog.dart';
+import 'edit_order_sheet.dart';
+import 'invoice_screen.dart';
 
-/// Full details of one order: a status timeline, measurements, money, notes.
+/// Full details of one order. The first card holds everything: customer,
+/// dates, garment, style, fabric, colour, finishing, sizes and money.
 class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({super.key, required this.orderId});
 
@@ -24,10 +29,7 @@ class OrderDetailsScreen extends StatelessWidget {
     final order = provider.byId(orderId);
 
     if (order == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: EmptyState(text: t.noOrders),
-      );
+      return Scaffold(appBar: AppBar(), body: EmptyState(text: t.noOrders));
     }
 
     return Scaffold(
@@ -35,19 +37,30 @@ class OrderDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('${t.orderLabel} #${order.id}'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.edit_outlined)),
+          IconButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => InvoiceScreen(orderId: order.id),
+              ),
+            ),
+            icon: const Icon(Icons.receipt_long_rounded),
+          ),
+          IconButton(
+            onPressed: () => showContactOptions(context, order.customer.phone),
+            icon: const Icon(Icons.call_rounded),
+          ),
+          IconButton(
+            onPressed: () => showEditOrderSheet(context, order),
+            icon: const Icon(Icons.edit_outlined),
+          ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
-          _customerCard(t, order),
+          _overviewCard(context, t, order),
           const SizedBox(height: 14),
           _progressCard(context, t, provider, order),
-          const SizedBox(height: 14),
-          ...order.items.expand(_itemSection),
-          const SizedBox(height: 4),
-          _costCard(t, order),
           const SizedBox(height: 14),
           _payments(context, t, order),
           const SizedBox(height: 14),
@@ -57,22 +70,34 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _advance(
+  Future<void> _advance(
     BuildContext context,
     OrdersProvider provider,
     Order order,
     OrderStatus next,
-  ) {
+  ) async {
+    if (next == OrderStatus.delivered) {
+      final done = await deliverOrderWithPayment(context, provider, order);
+      if (!context.mounted) return;
+      if (done) {
+        showConfetti(context);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => InvoiceScreen(orderId: order.id)),
+        );
+      }
+      return;
+    }
     provider.updateStatus(order.id, next);
-    if (next == OrderStatus.delivered) showConfetti(context);
   }
 
-  // ---------------------------------------------------------------- customer
+  // --------------------------------------------------------------- overview
 
-  Widget _customerCard(AppLocalizations t, Order order) {
+  Widget _overviewCard(BuildContext context, AppLocalizations t, Order order) {
     return SoftCard(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Customer + status.
           Row(
             children: [
               Container(
@@ -108,7 +133,12 @@ class OrderDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${t.phoneLabel}: ${order.customer.phone}',
+                      [
+                        if (order.customer.phone.isNotEmpty)
+                          order.customer.phone,
+                        if (order.customer.area?.isNotEmpty ?? false)
+                          order.customer.area!,
+                      ].join(' • '),
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -120,7 +150,7 @@ class OrderDetailsScreen extends StatelessWidget {
               StatusChip(order.status),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
@@ -132,6 +162,145 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 4),
+          for (final item in order.items) _itemBlock(item),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+          _moneyRow(t.totalLabel, Fmt.currency(order.subtotal)),
+          _moneyRow(t.advanceLabel, Fmt.currency(order.paid)),
+          _moneyRow(
+            t.remainingLabel,
+            Fmt.currency(order.remaining),
+            color: order.loan > 0 ? AppColors.error : AppColors.success,
+            bold: true,
+          ),
+          if (order.loan > 0) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.account_balance_wallet_outlined,
+                    size: 18,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'قەرز ${Fmt.currency(order.loan)}',
+                      style: TextStyle(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => _settleLoan(context, order),
+                icon: const Icon(Icons.price_check_rounded, size: 18),
+                label: const Text('وەرگرتنی قەرز'),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _itemBlock(OrderItem item) {
+    final details = <Widget>[
+      if (item.style?.isNotEmpty ?? false) _kv('شێواز', item.style!),
+      if (item.fabrics.isNotEmpty)
+        _kv('جۆری قوماش', item.fabrics.join('، ')),
+      if (item.colors.isNotEmpty) _kv('ڕەنگی قوماش', item.colors.join('، ')),
+      if (item.finishing?.isNotEmpty ?? false)
+        _kv('تەواوکاری', item.finishing!),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (item.imageUrl != null)
+                RemotePhoto(
+                  url: item.imageUrl!,
+                  height: 46,
+                  width: 46,
+                  radius: 14,
+                  iconSize: 22,
+                )
+              else
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: AppColors.accentSoft,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    Icons.checkroom_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  item.garment,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              Text(
+                Fmt.currency(item.lineTotal),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          if (details.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            ...details,
+          ],
+          for (final set in item.measurements) ...[
+            const SizedBox(height: 12),
+            Text(
+              set.title,
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: set.fields
+                  .map((f) => _MeasureBox(label: f.label, value: f.value))
+                  .toList(),
+            ),
+          ],
         ],
       ),
     );
@@ -158,6 +327,54 @@ class OrderDetailsScreen extends StatelessWidget {
               fontSize: 13,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _kv(String k, String v) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$k: ',
+            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+          ),
+          Expanded(
+            child: Text(
+              v,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _moneyRow(String label, String value, {Color? color, bool bold = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
+              fontSize: bold ? 15.5 : 13.5,
+              color: color ?? AppColors.textPrimary,
             ),
           ),
         ],
@@ -219,131 +436,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  // ------------------------------------------------------------------ items
-
-  List<Widget> _itemSection(OrderItem item) {
-    return [
-      SectionHeader(title: item.garment),
-      const SizedBox(height: 10),
-      PhotoBox(
-        imageUrl: item.imageUrl,
-        height: 180,
-        label: 'وێنەی حەقی',
-        icon: Icons.image_outlined,
-      ),
-      const SizedBox(height: 12),
-      if (item.style != null) ...[
-        _kvText('شێواز', item.style!),
-        const SizedBox(height: 14),
-      ],
-      ...item.measurements.map(_measureSet),
-      const SizedBox(height: 6),
-    ];
-  }
-
-  Widget _measureSet(MeasurementSet set) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            set.title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: set.fields
-                .map((f) => _MeasureBox(label: f.label, value: f.value))
-                .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _kvText(String k, String v) {
-    return Row(
-      children: [
-        Text(
-          '$k: ',
-          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-        ),
-        Expanded(
-          child: Text(
-            v,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ------------------------------------------------------------------- money
-
-  Widget _costCard(AppLocalizations t, Order order) {
-    return SoftCard(
-      gradient: [AppColors.primaryDark, AppColors.primary],
-      shadowColor: AppColors.primaryDark,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            t.remainingLabel,
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            Fmt.currency(order.remaining),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _moneyRow(t.totalLabel, Fmt.currency(order.subtotal)),
-          if (order.discount > 0)
-            _moneyRow(t.discountLabel, '- ${Fmt.currency(order.discount)}'),
-          _moneyRow(t.advanceLabel, Fmt.currency(order.paid)),
-        ],
-      ),
-    );
-  }
-
-  Widget _moneyRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(color: Colors.white60, fontSize: 13.5),
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 13.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // ----------------------------------------------------------------- payments
 
   Widget _payments(BuildContext context, AppLocalizations t, Order order) {
     return SoftCard(
@@ -356,42 +449,45 @@ class OrderDetailsScreen extends StatelessWidget {
             onAction: () => _recordPayment(context, t, order),
           ),
           const SizedBox(height: 8),
-          ...order.payments.map(
-            (p) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 7),
-              child: Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.13),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.check_rounded,
-                      size: 17,
-                      color: AppColors.success,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '${p.method} â€¢ ${Fmt.shortDate(p.date)}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
+          if (order.payments.isEmpty)
+            Text(t.notesLabel, style: TextStyle(color: AppColors.textMuted))
+          else
+            ...order.payments.map(
+              (p) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.13),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.check_rounded,
+                        size: 17,
+                        color: AppColors.success,
                       ),
                     ),
-                  ),
-                  Text(
-                    Fmt.currency(p.amount),
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '${p.method} • ${Fmt.shortDate(p.date)}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      Fmt.currency(p.amount),
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -454,6 +550,28 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   // ----------------------------------------------------------------- dialogs
+
+  Future<void> _settleLoan(BuildContext context, Order order) async {
+    final provider = context.read<OrdersProvider>();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('وەرگرتنی قەرز'),
+        content: Text('${Fmt.currency(order.loan)} وەرگیرا و قەرزەکە تەواو بکرێت؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('نەخێر'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('بەڵێ'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) provider.addPayment(order.id, order.loan);
+  }
 
   Future<void> _recordPayment(
     BuildContext context,
@@ -618,27 +736,31 @@ class _MeasureBox extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: AppColors.textMuted),
           ),
           const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                value == value.roundToDouble()
-                    ? value.toInt().toString()
-                    : value.toString(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.3,
-                  color: AppColors.textPrimary,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  value == value.roundToDouble()
+                      ? value.toInt().toString()
+                      : value.toString(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 3),
-              Text(
-                'سم',
-                style: TextStyle(fontSize: 10, color: AppColors.textMuted),
-              ),
-            ],
+                const SizedBox(width: 3),
+                Text(
+                  'سم',
+                  style: TextStyle(fontSize: 10, color: AppColors.textMuted),
+                ),
+              ],
+            ),
           ),
         ],
       ),

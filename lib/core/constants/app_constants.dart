@@ -21,6 +21,10 @@ extension OrderStatusX on OrderStatus {
   bool get isActive =>
       this != OrderStatus.delivered && this != OrderStatus.cancelled;
 
+  /// A finished order (delivered or cancelled). These stay in the data but
+  /// are sorted to the end of lists and shown muted.
+  bool get isCompleted => !isActive;
+
   Color get color {
     switch (this) {
       case OrderStatus.pending:
@@ -91,51 +95,71 @@ const List<OrderStatus> orderFlow = [
   OrderStatus.delivered,
 ];
 
+/// Shown in the header until the logged-in shop sets its own name.
+const String kDefaultShopName = 'خەیاتو بەرگدروی شاڵ';
+
+/// The styles a shop offers by default. Editable in the shop settings.
+const List<String> kDefaultStyles = [
+  'ستایلی بارزانی',
+  'ستایلی ئدریس بارزانی',
+  'ستایلی سورانی',
+  'ستایلی بادینی',
+];
+
+/// Which measurements a garment needs.
+enum GarmentMeasurements {
+  /// Both بەشی سەرەوە and خوارەوە.
+  upperLower,
+
+  /// Only بەشی خوارەوە (e.g. شلوار).
+  lowerOnly,
+
+  /// Women's dress set: بەژن، کەمەر، سینگ.
+  women,
+}
+
 /// Common garment types for a Kurdish tailor shop.
 class GarmentType {
   final String id;
   final String ku;
   final String en;
   final IconData icon;
+  final GarmentMeasurements measurements;
 
   const GarmentType({
     required this.id,
     required this.ku,
     required this.en,
     required this.icon,
+    this.measurements = GarmentMeasurements.upperLower,
   });
 
   static const List<GarmentType> all = [
-    GarmentType(
-      id: 'kras',
-      ku: 'کراس',
-      en: 'Shirt/Dress',
-      icon: Icons.checkroom,
-    ),
     GarmentType(
       id: 'shalwar',
       ku: 'شلوار',
       en: 'Trousers',
       icon: Icons.dry_cleaning,
+      measurements: GarmentMeasurements.lowerOnly,
     ),
-    GarmentType(
-      id: 'jaket',
-      ku: 'چاکەت',
-      en: 'Jacket',
-      icon: Icons.dry_cleaning_outlined,
-    ),
-    GarmentType(id: 'abaya', ku: 'عەبا', en: 'Abaya', icon: Icons.woman),
     GarmentType(
       id: 'kras_afratan',
       ku: 'کراسی ئافرەتان',
       en: 'Women\'s dress',
       icon: Icons.woman_2,
+      measurements: GarmentMeasurements.women,
     ),
     GarmentType(
-      id: 'zir',
-      ku: 'جلوبەرگی منداڵان',
-      en: 'Kids wear',
-      icon: Icons.child_care,
+      id: 'qati_kurdi',
+      ku: 'قاتی کوردی',
+      en: 'Kurdish suit',
+      icon: Icons.checkroom,
+    ),
+    GarmentType(
+      id: 'destkari_jilo_berk',
+      ku: 'دەستکاری جلو بەرک',
+      en: 'Outfit alteration',
+      icon: Icons.dry_cleaning_outlined,
     ),
   ];
 }

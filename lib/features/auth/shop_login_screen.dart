@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/animations.dart';
+import '../../core/widgets/brand_loader.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../providers/orders_provider.dart';
 import '../../providers/shop_provider.dart';
@@ -68,6 +69,7 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
     FocusScope.of(context).unfocus();
     final auth = context.read<AuthService>();
     final orders = context.read<OrdersProvider>();
+    final shop = context.read<ShopProvider>();
     setState(() => _error = null);
 
     if (_isRegister) {
@@ -82,43 +84,42 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
         );
         return;
       }
-      final shop = context.read<ShopProvider>();
-      final orders = context.read<OrdersProvider>();
-      try {
-        await auth.register(
-          name: _name.text,
-          phone: _phone.text,
-          email: _email.text,
-          password: _password.text,
-        );
-      } catch (e) {
-        setState(() => _error = _friendly(e));
-        return;
-      }
-
-      // A brand-new shop starts empty: fresh profile, no orders.
-      if (!mounted) return;
-      await shop.clear();
-      shop.update(
-        ShopProfile(
-          ownerName: _name.text.trim(),
-          shopName: _shopName.text.trim(),
-          phone: _phone.text.trim(),
-          address: _address.text.trim(),
-        ),
-      );
-      orders.clearAll();
     } else {
       if (_identifier.text.trim().isEmpty || _password.text.isEmpty) {
         setState(() => _error = 'ئیمەیڵ/مۆبایل/ناو و وشەی نهێنی پێویستە');
         return;
       }
-      try {
-        await auth.signInByIdentifier(_identifier.text, _password.text);
-      } catch (e) {
-        setState(() => _error = _friendly(e));
-        return;
-      }
+    }
+
+    try {
+      await runWithBrandLoader(context, () async {
+        if (_isRegister) {
+          await auth.register(
+            name: _name.text,
+            phone: _phone.text,
+            email: _email.text,
+            password: _password.text,
+          );
+
+          // A brand-new shop starts empty: fresh profile, no orders.
+          await shop.clear();
+          shop.update(
+            ShopProfile(
+              ownerName: _name.text.trim(),
+              shopName: _shopName.text.trim(),
+              phone: _phone.text.trim(),
+              address: _address.text.trim(),
+            ),
+          );
+          orders.clearAll();
+        } else {
+          await auth.signInByIdentifier(_identifier.text, _password.text);
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = _friendly(e));
+      return;
     }
 
     if (!mounted) return;
@@ -130,7 +131,7 @@ class _ShopLoginScreenState extends State<ShopLoginScreen> {
   Future<void> _guest() async {
     final auth = context.read<AuthService>();
     final orders = context.read<OrdersProvider>();
-    await auth.continueAsGuest();
+    await runWithBrandLoader(context, () => auth.continueAsGuest());
     if (!mounted) return;
     orders.useShop(auth.user?.id ?? 'shop1');
     Navigator.of(context)

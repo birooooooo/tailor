@@ -10,36 +10,84 @@ import '../../../data/sample_data.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/order.dart';
 import '../../../providers/orders_provider.dart';
+import '../../../providers/shop_provider.dart';
 import '../settings/shop_settings_screen.dart';
 import '../orders/order_details_screen.dart';
 import '../orders/order_tile.dart';
 import '../orders/requests_screen.dart';
 
 /// Shop home: an immersive gradient header + colourful bento tiles.
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, this.onSeeAllOrders});
 
   final VoidCallback? onSeeAllOrders;
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final _scroll = ScrollController();
+  bool _hideIncome = false;
+  bool _collapsible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scroll.removeListener(_onScroll);
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// Rebuilds only when the income header should appear/disappear, not on
+  /// every scroll frame.
+  void _onScroll() {
+    if (!_collapsible) return;
+    final hide = _scroll.hasClients && _scroll.offset > 24;
+    if (hide != _hideIncome) setState(() => _hideIncome = hide);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final provider = context.watch<OrdersProvider>();
-    final recent = provider.orders.take(4).toList();
+    final shop = context.watch<ShopProvider>();
+    final shopName = shop.profile.shopName.isNotEmpty
+        ? shop.profile.shopName
+        : kDefaultShopName;
+    final recent = provider.homeOrders.take(4).toList();
     final ready = provider.byStatus(OrderStatus.ready).length;
+    _collapsible = provider.orders.length > 5;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
-          _Header(
-            greeting: t.greeting,
-            incomeLabel: t.statMonthlyIncome,
-            income: provider.monthlyIncome,
-            onSettings: () => _openSettings(context),
+          // Fixed header. When there are many orders, the income block
+          // collapses smoothly as the list scrolls.
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOutCubic,
+            alignment: Alignment.topCenter,
+            child: ClipRect(
+              child: _Header(
+                greeting: t.greeting,
+                shopName: shopName,
+                incomeLabel: t.statMonthlyIncome,
+                income: provider.monthlyIncome,
+                showIncome: !_hideIncome,
+                onSettings: () => _openSettings(context),
+              ),
+            ),
           ),
           Expanded(
             child: ListView(
+              controller: _scroll,
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
               children: [
                 Appear(
@@ -79,7 +127,7 @@ class DashboardScreen extends StatelessWidget {
                   child: SectionHeader(
                     title: t.recentOrders,
                     actionText: t.viewAll,
-                    onAction: onSeeAllOrders,
+                    onAction: widget.onSeeAllOrders,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -98,7 +146,6 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                 const SizedBox(height: 16),
-                Appear(delay: 480, child: _announcement(t)),
               ],
             ),
           ),
@@ -190,81 +237,24 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _announcement(AppLocalizations t) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primaryDark, AppColors.primary],
-        ),
-        borderRadius: BorderRadius.circular(AppColors.rMd),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t.announcements,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  t.announcementBody,
-                  style: const TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-                const SizedBox(height: 14),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.lime,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      t.viewUpdates,
-                      style: const TextStyle(
-                        color: Color(0xFF1A1F1B),
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(Icons.campaign_rounded, color: Colors.white24, size: 68),
-        ],
-      ),
-    );
-  }
 }
 
 /// Immersive gradient header with the month income.
 class _Header extends StatelessWidget {
   const _Header({
     required this.greeting,
+    required this.shopName,
     required this.incomeLabel,
     required this.income,
+    required this.showIncome,
     required this.onSettings,
   });
 
   final String greeting;
+  final String shopName;
   final String incomeLabel;
   final int income;
+  final bool showIncome;
   final VoidCallback onSettings;
 
   @override
@@ -339,11 +329,11 @@ class _Header extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              const Text(
-                                SampleData.shopName,
+                              Text(
+                                shopName,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -352,80 +342,80 @@ class _Header extends StatelessWidget {
                             ],
                           ),
                         ),
-                        _glassIcon(Icons.notifications_none_rounded, () {}),
-                        const SizedBox(width: 8),
                         _glassIcon(Icons.settings_outlined, onSettings),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Appear(
-                    delay: 90,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                incomeLabel,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 13,
+                  if (showIncome) ...[
+                    const SizedBox(height: 20),
+                    Appear(
+                      delay: 90,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  incomeLabel,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              AnimatedCount(
-                                value: income,
-                                format: Fmt.currency,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.8,
+                                const SizedBox(height: 8),
+                                AnimatedCount(
+                                  value: income,
+                                  format: Fmt.currency,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.8,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.22),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.trending_up_rounded,
-                                      size: 14,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'بەردەوام زیاد دەکات',
-                                      style: TextStyle(
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.22),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.trending_up_rounded,
+                                        size: 14,
                                         color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'بەردەوام زیاد دەکات',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        const _MiniBars(
-                          values: [0.4, 0.65, 0.5, 0.8, 0.6, 0.95, 0.75],
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          const _MiniBars(
+                            values: [0.4, 0.65, 0.5, 0.8, 0.6, 0.95, 0.75],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

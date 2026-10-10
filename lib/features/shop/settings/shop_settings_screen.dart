@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/brand_loader.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../providers/locale_provider.dart';
 import '../../../providers/shop_provider.dart';
@@ -13,6 +14,8 @@ import '../profile/measurements_screen.dart';
 import '../profile/services_screen.dart';
 import '../profile/shop_info_screen.dart';
 import '../profile/staff_screen.dart';
+import '../profile/styles_screen.dart';
+import '../profile/subscription_screen.dart';
 
 class ShopSettingsScreen extends StatelessWidget {
   const ShopSettingsScreen({super.key});
@@ -33,6 +36,16 @@ class ShopSettingsScreen extends StatelessWidget {
         children: [
           _accountTile(context, auth, shop),
           const SizedBox(height: 10),
+          _tile(
+            context,
+            Icons.workspace_premium_outlined,
+            'بەشداریکردن',
+            () => _push(context, const SubscriptionScreen()),
+            trailing: shop.profile.hasActiveSubscription
+                ? 'چالاک'
+                : 'چالاک نییە',
+          ),
+          const SizedBox(height: 10),
           _themeTile(context, theme),
           const SizedBox(height: 10),
           _tile(
@@ -46,6 +59,13 @@ class ShopSettingsScreen extends StatelessWidget {
             Icons.design_services_outlined,
             'خزمەتگوزاری و نرخ',
             () => _push(context, const ServicesScreen()),
+          ),
+          _tile(
+            context,
+            Icons.style_outlined,
+            'شێوازەکان',
+            () => _push(context, const StylesScreen()),
+            trailing: '${shop.styles.length}',
           ),
           _tile(
             context,
@@ -236,7 +256,7 @@ class ShopSettingsScreen extends StatelessWidget {
             ),
           ),
           onTap: () async {
-            await auth.signOut();
+            await runWithBrandLoader(context, () => auth.signOut());
             if (!context.mounted) return;
             // Clear the whole stack and go back to the login page.
             Navigator.of(context).pushAndRemoveUntil(

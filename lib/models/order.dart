@@ -30,6 +30,14 @@ class Customer {
     photoUrl: json['photoUrl'] as String?,
     area: json['area'] as String?,
   );
+
+  Customer copyWith({String? name, String? phone, String? area}) => Customer(
+    id: id,
+    name: name ?? this.name,
+    phone: phone ?? this.phone,
+    photoUrl: photoUrl,
+    area: area ?? this.area,
+  );
 }
 
 class MeasurementField {
@@ -126,6 +134,7 @@ class OrderItem {
   final String? imageUrl;
   final List<String> colors;
   final List<String> fabrics;
+  final String? finishing;
   final List<MeasurementSet> measurements;
 
   const OrderItem({
@@ -136,6 +145,7 @@ class OrderItem {
     this.imageUrl,
     this.colors = const [],
     this.fabrics = const [],
+    this.finishing,
     this.measurements = const [],
   });
 
@@ -149,6 +159,7 @@ class OrderItem {
     'imageUrl': imageUrl,
     'colors': colors,
     'fabrics': fabrics,
+    'finishing': finishing,
     'measurements': measurements.map((m) => m.toJson()).toList(),
   };
 
@@ -160,6 +171,7 @@ class OrderItem {
     imageUrl: json['imageUrl'] as String?,
     colors: ((json['colors'] as List?) ?? const []).cast<String>(),
     fabrics: ((json['fabrics'] as List?) ?? const []).cast<String>(),
+    finishing: json['finishing'] as String?,
     measurements: ((json['measurements'] as List?) ?? const [])
         .map((e) => MeasurementSet.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -202,17 +214,23 @@ class Order {
   /// Never typed by hand — always computed.
   int get remaining => payable - paid;
 
+  /// Money still owed after the clothes were handed over (قەرز).
+  int get loan =>
+      status == OrderStatus.delivered && remaining > 0 ? remaining : 0;
+
   Order copyWith({
     OrderStatus? status,
+    Customer? customer,
+    DateTime? dueDate,
     List<Payment>? payments,
     List<OrderNote>? notes,
   }) {
     return Order(
       id: id,
-      customer: customer,
+      customer: customer ?? this.customer,
       status: status ?? this.status,
       createdAt: createdAt,
-      dueDate: dueDate,
+      dueDate: dueDate ?? this.dueDate,
       items: items,
       discount: discount,
       payments: payments ?? this.payments,

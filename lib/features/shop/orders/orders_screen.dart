@@ -7,6 +7,8 @@ import '../../../core/widgets/app_widgets.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../providers/orders_provider.dart';
 import 'order_details_screen.dart';
+import 'deliver_dialog.dart';
+import 'invoice_screen.dart';
 import 'order_tile.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   OrderStatus? _filter;
+  bool _loanOnly = false;
   String _query = '';
 
   @override
@@ -25,11 +28,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final t = AppLocalizations.of(context);
     final provider = context.watch<OrdersProvider>();
 
-    var list = provider.byStatus(_filter);
+    var list = _loanOnly
+        ? provider.loanOrders
+        : (_filter == null
+              ? provider.sortedOrders
+              : (provider.byStatus(_filter)
+                    ..sort((a, b) => b.createdAt.compareTo(a.createdAt))));
     if (_query.isNotEmpty) {
       final q = _query.trim();
       list = list
-          .where((o) => o.customer.name.contains(q) || o.id.contains(q))
+          .where(
+            (o) =>
+                o.customer.name.contains(q) ||
+                o.customer.phone.contains(q) ||
+                o.id.contains(q),
+          )
           .toList();
     }
 
@@ -80,17 +93,34 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 children: [
                   AppChip(
                     label: t.filterAll,
-                    selected: _filter == null,
-                    onTap: () => setState(() => _filter = null),
+                    selected: _filter == null && !_loanOnly,
+                    onTap: () => setState(() {
+                      _filter = null;
+                      _loanOnly = false;
+                    }),
                   ),
                   ...orderFlow.map(
                     (s) => Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: AppChip(
                         label: s.ku,
-                        selected: _filter == s,
-                        onTap: () => setState(() => _filter = s),
+                        selected: _filter == s && !_loanOnly,
+                        onTap: () => setState(() {
+                          _filter = s;
+                          _loanOnly = false;
+                        }),
                       ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: AppChip(
+                      label: 'قەرز',
+                      selected: _loanOnly,
+                      onTap: () => setState(() {
+                        _loanOnly = true;
+                        _filter = null;
+                      }),
                     ),
                   ),
                 ],
@@ -121,7 +151,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ),
                           confirmDismiss: (direction) async {
                             if (direction == DismissDirection.startToEnd) {
-                              provider.advanceStatus(order.id);
+                              if (order.status == OrderStatus.ready) {
+                                final done = await deliverOrderWithPayment(
+                                  context,
+                                  provider,
+                                  order,
+                                );
+                                if (done && context.mounted) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          InvoiceScreen(orderId: order.id),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                provider.advanceStatus(order.id);
+                              }
                             } else {
                               provider.updateStatus(
                                 order.id,
@@ -132,6 +178,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           },
                           child: OrderTile(
                             order: order,
+                            showCall: true,
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) =>

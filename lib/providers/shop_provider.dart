@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/shop_profile.dart';
+import '../core/constants/app_constants.dart';
 
 /// The shop's profile (name, owner, contact, location, logo, staff,
 /// services, measurement fields). Saved on the device; syncs to Firestore
@@ -13,6 +14,24 @@ class ShopProvider extends ChangeNotifier {
 
   ShopProfile _profile = ShopProfile.empty;
   ShopProfile get profile => _profile;
+
+  /// The shop's styles, or the built-in defaults when none were customised.
+  List<String> get styles =>
+      _profile.styles.isEmpty ? kDefaultStyles : _profile.styles;
+
+  void addStyle(String style) {
+    final name = style.trim();
+    if (name.isEmpty || styles.contains(name)) return;
+    update(_profile.copyWith(styles: [...styles, name]));
+  }
+
+  void removeStyle(String style) {
+    update(
+      _profile.copyWith(
+        styles: styles.where((s) => s != style).toList(),
+      ),
+    );
+  }
 
   bool _loading = true;
   bool get isLoading => _loading;
@@ -54,8 +73,16 @@ class ShopProvider extends ChangeNotifier {
         staff: _profile.staff,
         services: _profile.services,
         measurementFields: _profile.measurementFields,
+        styles: _profile.styles,
+        subscriptionPlan: _profile.subscriptionPlan,
+        subscribedUntil: _profile.subscribedUntil,
       ),
     );
+  }
+
+  /// Activates a subscription plan until [until].
+  void subscribe({required String plan, required DateTime until}) {
+    update(_profile.copyWith(subscriptionPlan: plan, subscribedUntil: until));
   }
 
   /// Clears the profile (used when a brand-new account signs up).
