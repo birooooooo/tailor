@@ -60,7 +60,7 @@ class _BrandLoaderOverlayState extends State<BrandLoaderOverlay>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF1E7A5F), Color(0xFF0F5B4C), Color(0xFF1E4738)],
+              colors: [Color(0xFF49769F), Color(0xFF0A4174), Color(0xFF001D39)],
             ),
           ),
           child: Center(

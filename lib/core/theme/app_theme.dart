@@ -13,10 +13,11 @@ class AppTheme {
   static ThemeData get dark => _build(AppPalette.dark);
 
   static ThemeData _build(AppPalette p) {
+    final onPrimary = p.isDark ? p.primaryDark : Colors.white;
     final scheme = ColorScheme(
       brightness: p.brightness,
       primary: p.primary,
-      onPrimary: Colors.white,
+      onPrimary: onPrimary,
       secondary: p.accent,
       onSecondary: Colors.white,
       surface: p.surface,
@@ -82,7 +83,7 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: p.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: onPrimary,
           minimumSize: const Size.fromHeight(54),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppColors.rSm),

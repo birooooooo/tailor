@@ -100,12 +100,12 @@ class _ConfettiState extends State<_Confetti>
   List<_Piece> _build() {
     final rnd = math.Random(7);
     const colors = [
-      Color(0xFF0F5B4C),
-      Color(0xFFC9A84C),
-      Color(0xFF1E4738),
-      Color(0xFFD9CDBA),
-      Color(0xFF1E7A54),
-      Color(0xFFB3402F),
+      Color(0xFF0A4174),
+      Color(0xFF7BBDE8),
+      Color(0xFF001D39),
+      Color(0xFFBDD8E9),
+      Color(0xFF4E8EA2),
+      Color(0xFF6EA2B3),
     ];
     return List.generate(70, (_) {
       return _Piece(

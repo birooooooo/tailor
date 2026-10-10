@@ -219,7 +219,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1E7A5F), Color(0xFF0F5B4C)],
+          colors: [Color(0xFF49769F), Color(0xFF0A4174)],
         ),
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppColors.rMd),
