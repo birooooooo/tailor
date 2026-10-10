@@ -54,14 +54,9 @@ workflows:
     cache:
       cache_paths:
         - ~/.pub-cache
-        - ~/Library/Caches/CocoaPods
     scripts:
       - name: Get packages
         script: flutter pub get
-      - name: Install CocoaPods
-        script: |
-          cd ios
-          pod install
       - name: Build iOS (unsigned)
         script: flutter build ios --release --no-codesign
     artifacts:

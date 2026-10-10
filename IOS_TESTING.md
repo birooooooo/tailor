@@ -54,7 +54,6 @@ com.tailorapp.tailorApp
 5. In the project folder:
    ```
    flutter pub get
-   cd ios && pod install && cd ..
    flutter run
    ```
    Pick your iPhone when asked.
@@ -81,7 +80,8 @@ They install the **TestFlight** app and get your build (no cable needed).
 
 ## What I already set up for you
 - **iOS bundle id** and **deployment target 15.0** are configured.
-- **`ios/Podfile`** added (platform 15.0) so CocoaPods/Firebase work.
+- iOS uses **Swift Package Manager** (Flutter adds the plugin packages
+  automatically) — no manual CocoaPods step needed.
 - **Photo permission strings** added to `ios/Runner/Info.plist`
   (`NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription`) — needed because
   the app can pick a shop logo. Without these, iOS would crash on the picker.
